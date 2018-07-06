@@ -1,7 +1,7 @@
 
-## %(repository)s
+## ILDbench_tautau
 
-%(description)s
+ee->tautau analysis
 
 ### Installation
 
@@ -32,7 +32,7 @@ Explain here:
 Example:
 
 ```shell
-export MARLIN_DLL=./lib/lib%(repository)s.so
+export MARLIN_DLL=./lib/libILDbench_tautau.so
 Marlin ./scripts/ExampleProcessor.xml
 ```
 
@@ -44,7 +44,7 @@ More documentation available here in [doc/Readme.md](doc/Readme.md) !
 
 Explain here how can people reach you:
 
-- via the Github issue interface. For the skeleton package: https://github.com/ILDAnaSoft/%(repository)s/issues
+- via the Github issue interface. For the skeleton package: https://github.com/ILDAnaSoft/ILDbench_tautau/issues
 - **not mandatory**:
     - email address
     - working institute
