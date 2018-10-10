@@ -38,6 +38,19 @@ INCLUDE_DIRECTORIES( SYSTEM ${ROOT_INCLUDE_DIRS} )
 LINK_LIBRARIES( ${ROOT_LIBRARIES} )
 ADD_DEFINITIONS( ${ROOT_DEFINITIONS} )
 
+FIND_PACKAGE( LCFIVertex REQUIRED )
+INCLUDE_DIRECTORIES( ${LCFIVertex_INCLUDE_DIRS} )
+INCLUDE_DIRECTORIES( ${LCFIVertex_ROOT}/vertex_lcfi ${LCFIVertex_ROOT}/boost )
+LINK_LIBRARIES( ${LCFIVertex_LIBRARIES} )
+
+### tauola stuff
+INCLUDE_DIRECTORIES( /home/ilc/jeans/LHAPDF/lhapdf-5.9.1/include )
+INCLUDE_DIRECTORIES( /home/ilc/jeans/tauola/v116c/TAUOLA/include )
+LINK_DIRECTORIES( /home/ilc/jeans/tauola/v116c/TAUOLA/lib/  /home/ilc/jeans/LHAPDF/lhapdf-5.9.1/install/lib )
+LINK_LIBRARIES( LHAPDF TauolaCxxInterface TauolaFortran TauolaTauSpinner )
+
+
+
 # Compile you project
 ADD_SUBDIRECTORY( source )
 
