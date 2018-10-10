@@ -1,0 +1,43 @@
+<marlin>
+  <execute>
+    <processor name="myTauTauFinder"/>
+    <processor name="myAnaTauTau"/>
+    <!-- processor name="myTauTauVal"/ -->
+  </execute>
+
+  <global>
+    <parameter name="LCIOInputFiles">
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n001.d_dstm_10255_0.slcio
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n001.d_dstm_10255_1.slcio
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n001.d_dstm_10255_2.slcio
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n001.d_dstm_10255_3.slcio
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n001.d_dstm_10255_4.slcio
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n001.d_dstm_10255_5.slcio
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n002.d_dstm_10255_6.slcio
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n002.d_dstm_10255_7.slcio
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n002.d_dstm_10255_8.slcio
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n002.d_dstm_10255_9.slcio
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n002.d_dstm_10255_10.slcio
+/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n002.d_dstm_10255_11.slcio
+    </parameter>
+    <parameter name="MaxRecordNumber" value="0"/>
+    <parameter name="SkipNEvents" value="0"/>
+    <parameter name="SupressCheck" value="false"/>
+    <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT"> MESSAGE </parameter>
+  </global>
+
+  <processor name="myTauTauVal" type="validateDST_TauTauProcessor">
+    <parameter name="outputFilename"> SMALL_tautau_ILD_l5_eL.pR.root </parameter>
+    <parameter name="mccolskimmed"> 0  </parameter>
+    <parameter name="dbdsample"> 1 </parameter>
+  </processor>
+
+  <processor name="myAnaTauTau"  type="analyseTauProcessor">
+     <parameter name="outputFilename"> tauAna_tt.root </parameter>
+  </processor>
+
+  <processor name="myTauTauFinder" type="danielKeitaTauFinderProcessor">
+     <parameter name="outputFilename"> tauFind_tt.root </parameter>
+  </processor>
+
+</marlin>
