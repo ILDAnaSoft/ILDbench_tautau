@@ -2,15 +2,50 @@
 #define _MYVTX_H_
 
 #include "EVENT/Track.h"
-
 #include "vertex_lcfi/inc/event.h"
 #include "vertex_lcfi/inc/track.h"
-
 #include "vertex_lcfi/util/inc/memorymanager.h"
-
 #include "IMPL/ReconstructedParticleImpl.h"
-
 #include "TVector3.h"
+
+
+
+/*
+some simple documentation for Shin-Ichi
+
+1. make a vertexInfo object
+
+vertexInfo vv();
+
+2. set the bfield
+
+vv.setBField(3.5);
+
+3. add the LCIO::tracks you want to fit
+
+vv.addTrack( trk1 );
+vv.addTrack( trk2 );
+
+4. if you want a beamspot constraint
+
+float xyz[3]={10.e-3, 10.e-6, 0.3}; // in mm
+vv.setBeamSpotSize(xyz);
+vv.useIPcon(true);
+
+5. do the fit, get the vtx position
+
+TVector3 vtxPos = vv.getVertexPosition();
+float vtxChisq = vv.getVertexChisq();
+
+6. for more details, get the 3 eigenvectors and corresponding eigenvalues of the vertex ellipse
+
+for (int i=0; i<3; i++) {
+  TVector3 evec = vv.getEigenVector(int i);
+  float eval = vv.getEigenValue(int i);
+}
+
+ */
+
 
 class vertexInfo{
  public:
