@@ -15,7 +15,7 @@ using std::cout;
 using std::endl;
 
 // IP region size in mm, used for IP constraint
-const float vertexInfo::_ipSize[3] = { 10e-3 , 10e-6 , 0.3}; 
+//const float vertexInfo::_ipSize[3] = { 10e-3 , 10e-6 , 0.3}; 
 
 void vertexInfo::addTrack( EVENT::Track* track ) {
 
@@ -32,20 +32,12 @@ void vertexInfo::addTrack( EVENT::Track* track ) {
                             track->getZ0(),
                             track->getOmega(),
                             track->getTanLambda(),
-                            3.5 );
+                            _bField );
   rp->setMomentum( hel.getMomentum() );
   rp->setCharge( hel.getCharge() );
 
-  //  vertex_lcfi::Event* lcfi_evt(0);
-
-  //  vertex_lcfi::Track* vtx_lcfi_trk = vertex_lcfi::trackFromLCIORP(_lcfi_evt, rp);
   vertex_lcfi::Track* vtx_lcfi_trk = vertex_lcfi::trackFromLCIORP(NULL, rp);
   lcfi_tracks.push_back( vtx_lcfi_trk );
-
-  //  vertex_lcfi::MemoryManager<vertex_lcfi::Track>::Event()->registerObject(vtx_lcfi_trk);
-
-
-  //lcfi_events.push_back( lcfi_evt );
 
   _vtxValid=false;
   return;
@@ -65,8 +57,6 @@ void vertexInfo::calculateVertexPosition( ) {
 
     lcfi_trackstates.push_back( pstate );
 
-    //    vertex_lcfi::MemoryManager<vertex_lcfi::TrackState>::Event()->registerObject(pstate);
-
     trackStates.push_back(pstate);
     trackMap[pstate] = lcfi_tracks[i];
   }
@@ -78,15 +68,8 @@ void vertexInfo::calculateVertexPosition( ) {
   std::map<vertex_lcfi::TrackState*, double> chi2map;
   vertex_lcfi::ZVTOP::InteractionPoint *ipConst = 0;
 
-
   if ( _useIPcons ) { // use the IP constraint
     vertex_lcfi::util::Vector3 ippos( 0,0,0 );
-    // if ( _smrIP ) {
-    //   for (int i=0; i<3; i++) {
-    //     ippos(i) =  _rand->Gaus(i, _ipSize[i]);
-    //   }
-    // }
-    //vertex_lcfi::util::Vector3 ippos( _rand->Gaus(0, _ipSize[0]), _rand->Gaus(0, [1]), _rand->Gaus(0, _ipSize[2]) );
     vertex_lcfi::util::SymMatrix3x3 iperr;
     iperr(0,0) = pow(_ipSize[0],2);
     iperr(1,1) = pow(_ipSize[1],2);
@@ -95,9 +78,6 @@ void vertexInfo::calculateVertexPosition( ) {
     iperr(2,0)=iperr(0,2)=0;
     iperr(2,1)=iperr(1,2)=0;
     ipConst = new vertex_lcfi::ZVTOP::InteractionPoint(ippos, iperr);
-
-    //    vertex_lcfi::MemoryManager<vertex_lcfi::ZVTOP::InteractionPoint>::Event()->registerObject(ipConst);
-
   }
 
   if ( !_trimTracks ) { // just use all tracks
@@ -118,8 +98,6 @@ void vertexInfo::calculateVertexPosition( ) {
       if ( largestchidqcont>maxchisqcont || largestchidqcont-secondlargestchidqcont > maxchisqdiff ) {
 	if ( find( trackStates.begin(), trackStates.end(), worstTrack )!=trackStates.end() ) {
 	  trackStates.erase( find( trackStates.begin(), trackStates.end(), worstTrack ) ); // remove worst track
-	  //delete worstTrack;
-	  // _nrejecttrk++;
 	} else {
 	  cout << "WEIRD, shouldn;t happen!" << endl;
 	}
@@ -174,16 +152,6 @@ float vertexInfo::getVertexZ0(float x, float y) {
 }
 
 void vertexInfo::cleanup() {
-
-
-  //  cout << "hello 1" << endl;
-  //  vertex_lcfi::MetaMemoryManager::Event()->delAllObjects();
-  //  cout << "hello 2" << endl;
-  //  delete _lcfi_evt;
-  //  cout << "hello 3" << endl;
-
-
-
 
   for ( size_t i=0; i<myrecoparts.size(); i++) {
     delete myrecoparts[i];
