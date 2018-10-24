@@ -13,6 +13,8 @@
 #include "TVector3.h"
 #include "TMath.h"
 
+#include "vertexInfo.h"
+
 using namespace lcio ;
 using namespace marlin ;
 using std::cout;
@@ -51,6 +53,9 @@ void danielKeitaTauFinderProcessor::init() {
   _fout = new TFile(_outfile.c_str(),"recreate");
   h_gamgam_mass = new TH1F( "ggmass", "ggmass", 200, 0, 0.4 );
 
+  h_ttmass = new TH1F( "mcttmass", "mcttmass", 205, 0, 510 );
+  hSEL_ttmass = new TH1F( "SEL_mcttmass", "SEL_mcttmass", 205, 0, 510 );
+
   for (int iss=0; iss<4; iss++) {
     TString samp="sample";
     samp+=iss; samp+="_";
@@ -65,6 +70,8 @@ void danielKeitaTauFinderProcessor::init() {
     h_nnhad_tmass[iss] = new TH2F( samp+ "nnhad_tmass", samp+"nnhad_tmass", 10,-0.5,9.5,100,0,5 );
     h_ngam_nchg[iss] = new TH2F( samp+ "ngam_nchg", samp+"ngam_nchg", 10,-0.5,9.5,10,-0.5,9.5 );
 
+    h_mcTau_costh[iss]  = new TH2F(  samp+ "MCtau_costh", samp+ "MCtau_costh", 100, 0, 1, 100, 0, 1 );
+
     hSEL_tchg_tmass[iss]           = new TH2F( samp+ "SEL_tchg_tmass", samp+"SEL_tchg_tmass", 5,-2.5,2.5,100,0,5 );
     hSEL_ttmass_prongAngle[iss]    = new TH2F( samp+ "SEL_ttmass_prongAngle",   samp+"SEL_ttmass_prongAngle", 200,0,600,300,0,3.2);
     hSEL_ttmass_outsideEnergy[iss] = new TH2F( samp+ "SEL_ttmass_outsideEnergy",samp+"SEL_ttmass_outsideEnergy",200,0,600,100,0,100);
@@ -74,6 +81,8 @@ void danielKeitaTauFinderProcessor::init() {
     hSEL_nchg_tmass[iss]           = new TH2F( samp+ "SEL_nchg_tmass",          samp+"SEL_nchg_tmass", 10,-0.5,9.5,100,0,5 );
     hSEL_nnhad_tmass[iss]          = new TH2F( samp+ "SEL_nnhad_tmass",         samp+"SEL_nnhad_tmass", 10,-0.5,9.5,100,0,5 );
     hSEL_ngam_nchg[iss]            = new TH2F( samp+ "SEL_ngam_nchg",           samp+"SEL_ngam_nchg", 10,-0.5,9.5,10,-0.5,9.5 );
+
+    hSEL_mcTau_costh[iss]  = new TH2F(  samp+ "SEL_MCtau_costh", samp+ "SEL_MCtau_costh", 100, 0, 1, 100, 0, 1 );
 
     h_dec_tmass[iss]= new TH2F( samp+"h_dec_tmass", samp+"h_dec_tmass",tauUtils::NDECAYS,-.5,tauUtils::NDECAYS-0.5,100,0,5);
     h_dec_ngam[iss] = new TH2F( samp+"h_dec_ngam" , samp+"h_dec_ngam" ,tauUtils::NDECAYS,-.5,tauUtils::NDECAYS-0.5,10,-0.5,9.5);
@@ -95,6 +104,8 @@ void danielKeitaTauFinderProcessor::init() {
     h_a3p_cone_trk_pfo  [iss] = new TH2F( samp+"_a3p_cone_trk_pfo",   samp+"_a3p_cone_trk_pfo",   8,-0.5,7.5,8,-0.5,7.5 );
 
   }
+
+
 
 
   for (int i=0; i<4; i++) {
@@ -119,12 +130,12 @@ void danielKeitaTauFinderProcessor::processRunHeader( LCRunHeader* run) {
 
 void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) { 
 
-  //  cout << "processEvent " << evt->getEventNumber() << endl;
+  cout << "processEvent " << evt->getEventNumber() << endl;
 
 
   int isample(0); // MC sample - 0:high mass tt, 1:med mass tt, 2: lowmass tt, 3: mm
   float tautauInvMass(0);
-
+  float taucosth[2]={-1,-1};
   std::vector <MCParticle*> stableMCtaudaughters[2];
   std::vector <MCParticle*> allMCtaudaughters[2];
   std::vector <MCParticle*> finalmctaus;
@@ -142,6 +153,15 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
       if ( tautauInvMass > 480 ) isample=0;
       else if ( tautauInvMass > 75 ) isample=1;
       else isample=2;
+
+      taucosth[0] = fabs( tauUtils::getTLV(finalmctaus[0]).Vect().CosTheta() );
+      taucosth[1] = fabs( tauUtils::getTLV(finalmctaus[1]).Vect().CosTheta() );
+      if ( taucosth[0] > taucosth[1] ) {
+	float temp = taucosth[0];
+	taucosth[0] = taucosth[1];
+	taucosth[1] = temp;
+      }
+
     }
 
     _nOrig[isample]++;
@@ -156,6 +176,14 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 
   } catch(DataNotAvailableException &e) {};
 
+
+  
+
+
+  if ( tautauInvMass>0 ) {
+    h_ttmass->Fill(tautauInvMass);
+    h_mcTau_costh[isample]->Fill(taucosth[0], taucosth[1]);
+  }
 
   //  cout << tautauInvMass << " " << isample << endl;
 
@@ -292,6 +320,8 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
       }
     }
 
+
+
     //if ( ! highestPtChargedPFO[0].second ) {
     //  cout << "did not find first seed track!" << endl;
     //} else {
@@ -313,10 +343,32 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
       }
 
 
+
+
+
       // if ( ! highestPtChargedPFO[1].second ) {
       // 	cout << "did not find second seed track!" << endl;
       // } else {
       if ( highestPtChargedPFO[1].second ) {
+	Track* trk1 = highestPtChargedPFO[0].second->getTracks()[0];
+	Track* trk2 = highestPtChargedPFO[1].second->getTracks()[0];
+	if (trk1 && trk2 ) {
+	  vertexInfo* vtxInfo = new vertexInfo();
+	  vtxInfo->addTrack(trk1);
+	  vtxInfo->addTrack(trk2);
+	  vtxInfo->setSeedPos( TVector3(0,0,trk1->getZ0()) );
+	  TVector3 vtxpos = vtxInfo->getVertexPosition();
+	  cout << "ntrk, valid?, vtxChisq " << vtxInfo->getNtrack() << " " << vtxInfo->isValid() << " " << vtxInfo->getVertexChisq() << 
+	    " pos " << vtxpos[0] << " " << vtxpos[1] << " " << vtxpos[2] << endl;
+	  // the 3 eigenvectors of the vtx ellipse
+	  TVector3 evec0 = vtxInfo->getEigenVector(0);
+	  TVector3 evec1 = vtxInfo->getEigenVector(1);
+	  TVector3 evec2 = vtxInfo->getEigenVector(2);
+	  delete vtxInfo;
+	}
+
+
+
 
 	coneDir[1] = tauUtils::getTLV(highestPtChargedPFO[1].second).Vect();
 
@@ -588,6 +640,12 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 	if (dilepCut)          _nSel_dilep[isample]++;
 	if (select)            _nSel[isample]++;
 
+	
+	if ( tautauInvMass>0 && select ) {
+	  hSEL_ttmass->Fill(tautauInvMass);
+	  hSEL_mcTau_costh[isample]->Fill(taucosth[0], taucosth[1]);
+	}
+
 	h_ttmass_prongAngle[isample]->Fill( tautauInvMass, prongangle );
 	h_ttmass_outsideEnergy[isample]->Fill( tautauInvMass, outsideConeEnergy );
 	h_ttmass_insideEnergy[isample]->Fill( tautauInvMass, insideConeEnergy );
@@ -682,6 +740,25 @@ void danielKeitaTauFinderProcessor::check( LCEvent * evt ) {
 void danielKeitaTauFinderProcessor::end(){
 
   cout << "end" << endl;
+
+  _fout->cd();
+
+  TH1F* eff_ttmass = (TH1F*) h_ttmass -> Clone("seleff_ttmass");
+  eff_ttmass->Sumw2();
+  eff_ttmass->Divide( hSEL_ttmass, h_ttmass, 1, 1, "B" );
+  
+  for (int i=0; i<4; i++) {
+    TH1D* hh1 = h_mcTau_costh[i]->ProjectionX();
+    TH1D* hh2 = hSEL_mcTau_costh[i]->ProjectionX();
+    TH1D* heff = (TH1D*) hh1->Clone( "seleff_"+TString(hh1->GetName()) );
+    heff->Sumw2();
+    heff->Divide( hh2, hh1, 1, 1, "B" );
+
+    TH1F* eff_dec = (TH1F*) h_dec[i] -> Clone("seleff_"+TString(h_dec[i]->GetName()) );
+    eff_dec->Sumw2();
+    eff_dec->Divide( hSEL_dec[i], h_dec[i], 1, 1, "B" );
+
+  }
 
   _fout->Write(0);
   _fout->Close();

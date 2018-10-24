@@ -1,5 +1,6 @@
 <marlin>
   <execute>
+    <processor name="InitDD4hep"/>
     <processor name="myTauTauFinder"/>
     <processor name="myAnaTauTau"/>
     <!-- processor name="myTauTauVal"/ -->
@@ -20,11 +21,19 @@
 /group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n002.d_dstm_10255_10.slcio
 /group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n002.d_dstm_10255_11.slcio
     </parameter>
-    <parameter name="MaxRecordNumber" value="0"/>
+    <parameter name="MaxRecordNumber" value="50"/>
     <parameter name="SkipNEvents" value="0"/>
     <parameter name="SupressCheck" value="false"/>
     <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT"> MESSAGE </parameter>
   </global>
+
+
+  <processor name="InitDD4hep" type="InitializeDD4hep">
+    <!--InitializeDD4hep reads a compact xml file and initializes the DD4hep::LCDD object-->
+    <!--Name of the DD4hep compact xml file to load-->
+    <parameter name="DD4hepXMLFile" type="string"> $lcgeo_DIR/ILD/compact/ILD_l5_v02/ILD_l5_v02.xml </parameter>
+  </processor>
+
 
   <processor name="myTauTauVal" type="validateDST_TauTauProcessor">
     <parameter name="outputFilename"> SMALL_tautau_ILD_l5_eL.pR.root </parameter>

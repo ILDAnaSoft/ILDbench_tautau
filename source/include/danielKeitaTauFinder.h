@@ -50,6 +50,9 @@ class danielKeitaTauFinderProcessor : public Processor {
   TFile* _fout;
   TH1F* h_gamgam_mass;
 
+  TH1F* h_ttmass;
+  TH1F* hSEL_ttmass;
+
   TH2F* h_tchg_tmass[4];
   TH2F* h_ngam_tmass[4];
   TH2F* h_nchg_tmass[4];
@@ -59,6 +62,9 @@ class danielKeitaTauFinderProcessor : public Processor {
   TH2F* h_ttmass_outsideEnergy[4];
   TH2F* h_ttmass_insideEnergy[4];
   TH2F* h_ttmass_outsidePt[4];
+
+  TH2F* h_mcTau_costh[4];
+  TH2F* hSEL_mcTau_costh[4];
 
   TH2F* h_dec_tmass[4];
   TH2F* h_dec_ngam[4];

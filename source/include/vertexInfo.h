@@ -7,6 +7,7 @@
 #include "vertex_lcfi/util/inc/memorymanager.h"
 #include "IMPL/ReconstructedParticleImpl.h"
 #include "TVector3.h"
+#include <marlinutil/GeometryUtil.h>
 
 
 
@@ -16,10 +17,6 @@ some simple documentation for Shin-Ichi
 1. make a vertexInfo object
 
 vertexInfo vv();
-
-2. set the bfield
-
-vv.setBField(3.5);
 
 3. add the LCIO::tracks you want to fit
 
@@ -56,7 +53,8 @@ class vertexInfo{
     _useIPcons =false;
     _trimTracks=false;
     // bfield
-    _bField=3.5;
+    _bField=MarlinUtil::getBzAtOrigin();
+
     // IP region size in mm, used for IP constraint
     _ipSize[0] = 10.e-3;
     _ipSize[1] = 10.e-6;
@@ -64,6 +62,7 @@ class vertexInfo{
     for (int i=0; i<3; i++) {
       _eigenValues[i]=-999;
       _eigenVectors[i].SetXYZ(999,999,999);
+      _seed[i]=0;
     }
   }
   ~vertexInfo() {cleanup();}
@@ -92,11 +91,14 @@ class vertexInfo{
   void trimTracks( bool b=true ) { _trimTracks=b; _vtxValid=false; }
   void useIPcon( bool b=true ) { _useIPcons=b; _vtxValid=false; }
 
+  void setSeedPos( TVector3 seed ) {_seed = seed;}
+
  private:
 
   bool _useIPcons;
   bool _trimTracks;
   float _bField;
+  TVector3 _seed;
 
   std::vector < vertex_lcfi::Track* > lcfi_tracks;
   std::vector < vertex_lcfi::TrackState* > lcfi_trackstates;
