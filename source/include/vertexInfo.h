@@ -71,7 +71,6 @@ class vertexInfo{
     for ( int i=0; i<3; i++) _ipSize[i]=xyz[i];
   }
 
-  void setBField(float field) {_bField=field;}
   float getBField() {return _bField;}
 
   void addTrack( EVENT::Track* trk );
