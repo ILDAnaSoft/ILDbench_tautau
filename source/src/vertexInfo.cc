@@ -10,14 +10,15 @@
 #include <TMatrixDSymEigen.h>
 
 #include <iostream>
+#include <cassert>
 
 using std::cout;
 using std::endl;
 
-// IP region size in mm, used for IP constraint
-//const float vertexInfo::_ipSize[3] = { 10e-3 , 10e-6 , 0.3}; 
-
 void vertexInfo::addTrack( EVENT::Track* track ) {
+
+  // ensure that b field is nonzero
+  assert ( fabs( _bField )>1e-5 );
 
   // convert to LCFIvertex Track object.
   // this need a recoParticle as input, with momentum, charge
@@ -67,6 +68,11 @@ void vertexInfo::calculateVertexPosition( ) {
   double chi2ip;
   std::map<vertex_lcfi::TrackState*, double> chi2map;
   vertex_lcfi::ZVTOP::InteractionPoint *ipConst = 0;
+
+  if ( _seed.Mag()>0 ) {
+    vertex_lcfi::util::Vector3 vtxposSeed(_seed[0], _seed[1], _seed[2]);
+    kalman.setSeed(vtxposSeed);
+  }
 
   if ( _useIPcons ) { // use the IP constraint
     vertex_lcfi::util::Vector3 ippos( 0,0,0 );
@@ -130,7 +136,6 @@ void vertexInfo::calculateVertexPosition( ) {
   _chisq = chi2fit;
 
   _vtxValid=true;
-
 
   if (ipConst) delete ipConst;
 

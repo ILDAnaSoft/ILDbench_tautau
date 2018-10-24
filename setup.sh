@@ -1,5 +1,6 @@
 unset MARLIN_DLL
-source /cvmfs/ilc.desy.de/sw/x86_64_gcc49_sl6/v02-00-01/init_ilcsoft.sh
+source /cvmfs/ilc.desy.de/sw/x86_64_gcc49_sl6/v02-00-02/init_ilcsoft.sh
+#source ./init_ilcsoft_v020002.sh
 
 # this is stuff for tauola/tauspinner
 export LHAPDF_DIR=/home/ilc/jeans/LHAPDF/lhapdf-5.9.1
