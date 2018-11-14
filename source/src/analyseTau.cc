@@ -161,6 +161,14 @@ void analyseTauProcessor::processEvent( LCEvent * evt ) {
 
   int reco_imcMatch[2]={-1,-1};
 
+//  PIDHandler* pidHandler;
+//  try {
+//    LCCollection* pfocol = evt->getCollection( "PandoraPFOs");
+//    pidHandler=new PIDHandler(pfocol);
+//  } catch(DataNotAvailableException &e) {};
+
+
+
   try {
     LCCollection* pfocol = evt->getCollection( "danielKeitaRecoTaus" );
 
