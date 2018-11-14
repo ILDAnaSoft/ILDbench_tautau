@@ -7,6 +7,7 @@
 
 #include "EVENT/LCCollection.h"
 #include "EVENT/Track.h"
+#include "EVENT/Vertex.h"
 #include "IMPL/LCCollectionVec.h"
 #include "IMPL/ReconstructedParticleImpl.h"
 
@@ -41,6 +42,9 @@ danielKeitaTauFinderProcessor::danielKeitaTauFinderProcessor() : Processor("dani
 void danielKeitaTauFinderProcessor::init() { 
   cout << "hello from danielKeitaTauFinderProcessor::init" << endl;
 
+  _nNotconvertedInTrk=0;
+  _nconvertedInTrk=0;
+
   //  decLab[TDEC_E  ] = "E";
   //  decLab[TDEC_M  ] = "M";
   //  decLab[TDEC_PI ] = "PI";
@@ -55,6 +59,18 @@ void danielKeitaTauFinderProcessor::init() {
 
   h_ttmass = new TH1F( "mcttmass", "mcttmass", 205, 0, 510 );
   hSEL_ttmass = new TH1F( "SEL_mcttmass", "SEL_mcttmass", 205, 0, 510 );
+
+  h_conversionPos = new TH2F("convPos","convPos", 500, 0, 3000, 500, 0, 2000);
+  h_v0Pos = new TH2F("v0Pos","v0Pos", 500, 0, 3000, 500, 0, 2000);
+
+  h_conversionPos2 = new TH2F("convPos2","convPos2", 500, 0, 2000, 500, 0, 400);
+  h_v0Pos2 = new TH2F("v0Pos2","v0Pos2", 500, 0, 2000, 500, 0, 400);
+
+  h_neuPandoraCompound_mass   =  new TH1F("neuPandoraCompound_mass",   "neuPandoraCompound_mass", 100, 0, 3 );
+  h_neuPandoraCompound_ntrk   =  new TH1F("neuPandoraCompound_ntrk",   "neuPandoraCompound_ntrk", 5, 0, 5 );
+  h_neuPandoraCompound_vtxPos =  new TH2F("neuPandoraCompound_vtxPos", "neuPandoraCompound_vtxPos",  500, 0, 3000, 500, 0, 2000);
+  h_neuPandoraCompound_vtxPos2 =  new TH2F("neuPandoraCompound_vtxPos2", "neuPandoraCompound_vtxPos2",  500, 0, 2000, 500, 0, 400);
+  h_neuPandoraCompound_vtxChisq  =  new TH1F("neuPandoraCompound_vtxChisq",   "neuPandoraCompound_vtxChisq", 100, 0, 10 );
 
   for (int iss=0; iss<4; iss++) {
     TString samp="sample";
@@ -144,7 +160,6 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
   try {
     LCCollection* mccol = evt->getCollection( "MCParticle" );
 
-
     finalmctaus = tauUtils::findFinalTaus( mccol );
 
     if ( finalmctaus.size()!=2 ) isample=3;
@@ -174,6 +189,30 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
       }
     }
 
+    // look for converted photons from pi0
+    for (int j=0; j<mccol->getNumberOfElements(); j++) {
+      MCParticle* mcp = dynamic_cast<MCParticle*> (mccol->getElementAt(j));
+
+      if ( mcp->getPDG()==22 && mcp->getParents().size()>0 && mcp->getParents()[0]->getPDG()==111 ) {
+
+	float radius = sqrt( pow(mcp->getEndpoint()[0],2) + pow (mcp->getEndpoint()[1], 2 ) );
+
+	//	cout << "MC photon endpoint r, z " << radius << " " << mcp->getEndpoint()[2] << endl;
+
+	h_conversionPos->Fill(fabs( mcp->getEndpoint()[2] ), radius);
+	h_conversionPos2->Fill(fabs( mcp->getEndpoint()[2] ), radius);
+	
+	if ( fabs( mcp->getEndpoint()[2] ) < 2400 && radius < 1600 ) {
+	  _nconvertedInTrk++;
+	} else {
+	  _nNotconvertedInTrk++;
+	}
+
+
+      }
+    }
+
+
   } catch(DataNotAvailableException &e) {};
 
 
@@ -198,6 +237,78 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 
   //-----------------------------
 
+  // try looking at the recosntructed v0 collection
+  // possibly some conversions?
+  try {
+    LCCollection* v0_pfocol = evt->getCollection( "BuildUpVertex_V0_RP" );
+    LCCollection* v0_vtxcol = evt->getCollection( "BuildUpVertex_V0" );
+    if ( v0_pfocol->getNumberOfElements()>0 ) {
+      std::cout << "number of built up vertices: " << v0_pfocol->getNumberOfElements() << std::endl;
+      for (int j=0; j<v0_pfocol->getNumberOfElements(); j++) {
+	ReconstructedParticle* pfo = dynamic_cast<ReconstructedParticle*> (v0_pfocol->getElementAt(j));
+	Vertex* vtx = dynamic_cast<Vertex*> (v0_vtxcol->getElementAt(j));
+
+	h_v0Pos->Fill( fabs(vtx->getPosition()[2]) , sqrt( pow( vtx->getPosition()[0], 2 ) +  pow( vtx->getPosition()[1], 2 ) ) ); 
+	h_v0Pos2->Fill( fabs(vtx->getPosition()[2]) , sqrt( pow( vtx->getPosition()[0], 2 ) +  pow( vtx->getPosition()[1], 2 ) ) ); 
+
+	cout << j << " " << pfo->getType() << " " << pfo->getMass() << " " << pfo->getEnergy() << " " << pfo->getParticles().size() << " " << endl;
+	cout << " vertex info " << vtx->getPosition()[0] << " " <<  vtx->getPosition()[1] << " " <<  vtx->getPosition()[2] << endl;
+	for ( size_t jj=0; jj<pfo->getParticles().size(); jj++) {
+	  ReconstructedParticle* pfo2 = pfo->getParticles()[jj];
+          MCParticle* bestmatch = tauUtils::getBestTrackMatch( pfo2, relNavi );
+
+	  cout << "   " << jj << " " << pfo2->getType() << " " << pfo2->getMass() << " " << pfo2->getEnergy() << " " << bestmatch;
+	  if (bestmatch) {
+	    cout << " MC match: " << bestmatch->getPDG() << " " << bestmatch->getEnergy();
+
+	    if ( bestmatch->getParents().size()>0 ) cout << " MC parent: " <<  bestmatch->getParents()[0]->getPDG();
+
+	  }
+	  cout << endl;
+
+	}
+      }
+    }
+
+  } catch(DataNotAvailableException &e) {};
+
+  // look for v0 pfos found by Pandora
+
+
+
+  try {
+    LCCollection* pfocol = evt->getCollection( "PandoraPFOs" );
+    for (int j=0; j<pfocol->getNumberOfElements(); j++) {
+      ReconstructedParticle* pfo = dynamic_cast<ReconstructedParticle*> (pfocol->getElementAt(j));
+      if ( pfo->getCharge()==0 ) {
+	if ( pfo->getTracks().size()>0 || pfo->getParticles().size()>0 ) {
+	  //cout << "neutral Pandora PFO with ntrks, nparts = " << 
+	  //  pfo->getTracks().size() << " " << pfo->getParticles().size() << 
+	  //  " type, mass = " << pfo->getType() << " " << pfo->getMass() << 
+	  //  " vertex? " << pfo->getStartVertex() << endl;
+	  h_neuPandoraCompound_mass->Fill(pfo->getMass());
+	  h_neuPandoraCompound_ntrk->Fill(pfo->getTracks().size());
+	  vertexInfo* vtxInfo = new vertexInfo();
+	  for ( size_t itrk=0; itrk< pfo->getTracks().size(); itrk++) {
+	    vtxInfo->addTrack( pfo->getTracks()[itrk] );
+	  }
+	  const float *refPt = pfo->getTracks()[0]->getTrackState ( EVENT::TrackState::AtFirstHit ) -> getReferencePoint();
+	  //	  cout << "ref point "  << refPt[0] << " " << refPt[1] << " " << refPt[2] << endl;
+	  vtxInfo->setSeedPos( TVector3( refPt[0], refPt[1], refPt[2] ) );
+	  TVector3 vtxpos = vtxInfo->getVertexPosition();
+	  //	  cout << "ntrk, valid?, vtxChisq " << vtxInfo->getNtrack() << " " << vtxInfo->isValid() << " " << vtxInfo->getVertexChisq() << 
+	  //   " pos " << vtxpos[0] << " " << vtxpos[1] << " " << vtxpos[2] << endl;
+	  h_neuPandoraCompound_vtxPos->Fill(fabs(vtxpos[2]), sqrt( pow(vtxpos[0],2) + pow(vtxpos[1],2) ) );
+	  h_neuPandoraCompound_vtxPos2->Fill(fabs(vtxpos[2]), sqrt( pow(vtxpos[0],2) + pow(vtxpos[1],2) ) );
+	  h_neuPandoraCompound_vtxChisq->Fill( vtxInfo->getVertexChisq() );
+	  delete vtxInfo;
+	}
+      }
+    }
+  } catch(DataNotAvailableException &e) {};
+
+
+
 
   try {
     LCCollection* pfocol = evt->getCollection( "DistilledPFOs" );
@@ -218,15 +329,11 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 	  subpfos.push_back( pfo->getParticles()[kk] );
 	}
       }
-
       //      cout << "matching " << pfo->getType() << " " << pfo->getEnergy() << " nsub " << subpfos.size() << endl;
-
 
       std::vector < MCParticle* > mcpmatch;
       for ( size_t kk=0; kk<subpfos.size(); kk++ ) {
-
 	//	cout << " subpfo " << kk << " charge, en " <<  subpfos[kk]->getCharge() << " " << subpfos[kk]->getEnergy() << endl;
-
 	if ( abs( subpfos[kk]->getCharge() ) > 0.1 ) {
 	  MCParticle* mcp = tauUtils::getBestTrackMatch ( subpfos[kk], relNavi );
 	  if ( mcp ) mcpmatch.push_back(mcp);
@@ -349,23 +456,26 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
       // if ( ! highestPtChargedPFO[1].second ) {
       // 	cout << "did not find second seed track!" << endl;
       // } else {
+
       if ( highestPtChargedPFO[1].second ) {
-	Track* trk1 = highestPtChargedPFO[0].second->getTracks()[0];
-	Track* trk2 = highestPtChargedPFO[1].second->getTracks()[0];
-	if (trk1 && trk2 ) {
-	  vertexInfo* vtxInfo = new vertexInfo();
-	  vtxInfo->addTrack(trk1);
-	  vtxInfo->addTrack(trk2);
-	  vtxInfo->setSeedPos( TVector3(0,0,trk1->getZ0()) );
-	  TVector3 vtxpos = vtxInfo->getVertexPosition();
-	  cout << "ntrk, valid?, vtxChisq " << vtxInfo->getNtrack() << " " << vtxInfo->isValid() << " " << vtxInfo->getVertexChisq() << 
-	    " pos " << vtxpos[0] << " " << vtxpos[1] << " " << vtxpos[2] << endl;
-	  // the 3 eigenvectors of the vtx ellipse
-	  TVector3 evec0 = vtxInfo->getEigenVector(0);
-	  TVector3 evec1 = vtxInfo->getEigenVector(1);
-	  TVector3 evec2 = vtxInfo->getEigenVector(2);
-	  delete vtxInfo;
-	}
+
+	// this was just testing the vtx code for shin-ichi
+	//	Track* trk1 = highestPtChargedPFO[0].second->getTracks()[0];
+	//	Track* trk2 = highestPtChargedPFO[1].second->getTracks()[0];
+	//	if (trk1 && trk2 ) {
+	//	  vertexInfo* vtxInfo = new vertexInfo();
+	//	  vtxInfo->addTrack(trk1);
+	//	  vtxInfo->addTrack(trk2);
+	//	  vtxInfo->setSeedPos( TVector3(0,0,trk1->getZ0()) );
+	//	  TVector3 vtxpos = vtxInfo->getVertexPosition();
+	//	  cout << "ntrk, valid?, vtxChisq " << vtxInfo->getNtrack() << " " << vtxInfo->isValid() << " " << vtxInfo->getVertexChisq() << 
+	//	    " pos " << vtxpos[0] << " " << vtxpos[1] << " " << vtxpos[2] << endl;
+	//	  // the 3 eigenvectors of the vtx ellipse
+	//	  TVector3 evec0 = vtxInfo->getEigenVector(0);
+	//	  TVector3 evec1 = vtxInfo->getEigenVector(1);
+	//	  TVector3 evec2 = vtxInfo->getEigenVector(2);
+	//	  delete vtxInfo;
+	//	}
 
 
 
@@ -806,6 +916,9 @@ void danielKeitaTauFinderProcessor::end(){
 //  cout << " nsel HM            " << _nSel[1] << " " << 1.*_nSel[1]/_nTwoMcTauHighMass << endl;
 
 
+
+  cout << "n gamma converted / not converted in trk = " << _nconvertedInTrk << " " << _nNotconvertedInTrk << endl;
+  
   std::cout << "danielKeitaTauFinderProcessor::end()  " << name() 
  	    << std::endl ;
 }

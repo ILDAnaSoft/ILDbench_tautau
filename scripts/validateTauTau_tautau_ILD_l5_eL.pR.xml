@@ -6,6 +6,9 @@
     <!-- processor name="myTauTauVal"/ -->
   </execute>
 
+<!--
+-->
+
   <global>
     <parameter name="LCIOInputFiles">
 /group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n001.d_dstm_10255_0.slcio
@@ -21,7 +24,7 @@
 /group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n002.d_dstm_10255_10.slcio
 /group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/2f_Z_leptonic/ILD_l5_o1_v02/v02-00-01/rv02-00-01.sv02-00-01.mILD_l5_o1_v02.E500-TDR_ws.I250106.P2f_z_l.eL.pR.n002.d_dstm_10255_11.slcio
     </parameter>
-    <parameter name="MaxRecordNumber" value="50"/>
+    <parameter name="MaxRecordNumber" value="50000"/>
     <parameter name="SkipNEvents" value="0"/>
     <parameter name="SupressCheck" value="false"/>
     <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT"> MESSAGE </parameter>

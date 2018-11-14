@@ -46,12 +46,27 @@ class danielKeitaTauFinderProcessor : public Processor {
 
   float _conesize;
 
+  int _nNotconvertedInTrk, _nconvertedInTrk;
+
   std::string _outfile;
   TFile* _fout;
   TH1F* h_gamgam_mass;
 
   TH1F* h_ttmass;
   TH1F* hSEL_ttmass;
+
+  TH2F* h_conversionPos;
+  TH2F* h_v0Pos;
+
+  TH2F* h_conversionPos2;
+  TH2F* h_v0Pos2;
+
+  TH1F* h_neuPandoraCompound_mass;
+  TH1F* h_neuPandoraCompound_ntrk;
+  TH2F* h_neuPandoraCompound_vtxPos;
+  TH2F* h_neuPandoraCompound_vtxPos2;
+  TH1F* h_neuPandoraCompound_vtxChisq;
+
 
   TH2F* h_tchg_tmass[4];
   TH2F* h_ngam_tmass[4];
