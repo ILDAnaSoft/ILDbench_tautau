@@ -48,7 +48,7 @@ void tautau2fEventFitter::prepareForFit() {
 
 bool tautau2fEventFitter::fitIt_single_single(int bestStrategy) {
 
-  cout << "hello from fitIt_single_single, strategy " << bestStrategy << endl;
+  if (verbose)  cout << "hello from fitIt_single_single, strategy " << bestStrategy << endl;
 
   // both taus are treated as single prong
   if (!functor) {
@@ -108,16 +108,14 @@ bool tautau2fEventFitter::fitIt_single_single(int bestStrategy) {
       setPsi( 1, ffxs[1] );
       setIPz( ffxs[2] );
 
-      cout << "SOLUTION " << isol << " quadrant " << iquad << " BEST FIT: pars " << ffxs[0] << " " << ffxs[1] << " " << ffxs[2] << " value " << thispt << endl;
-
-      getEvent4Momentum( isolution[0], isolution[1] ).Print();
-
-      cout << "decay lengths: " << getDecayLength( 0, isolution[0] ) << " " << getDecayLength( 1, isolution[1] ) << endl;
-
-
-      cout << getTau4Momentum(0, isolution[0]).M() << " " << 
-	getTau4Momentum(1, isolution[1]).M() << " " <<  
-	(getTau4Momentum(0, isolution[0])+getTau4Momentum(1, isolution[1])).M() << endl;
+      if (verbose) {
+	cout << "SOLUTION " << isol << " quadrant " << iquad << " BEST FIT: pars " << ffxs[0] << " " << ffxs[1] << " " << ffxs[2] << " value " << thispt << endl;
+	getEvent4Momentum( isolution[0], isolution[1] ).Print();
+	cout << "decay lengths: " << getDecayLength( 0, isolution[0] ) << " " << getDecayLength( 1, isolution[1] ) << endl;
+	cout << getTau4Momentum(0, isolution[0]).M() << " " << 
+	  getTau4Momentum(1, isolution[1]).M() << " " <<  
+	  (getTau4Momentum(0, isolution[0])+getTau4Momentum(1, isolution[1])).M() << endl;
+      }
 
       const float ptcutoff = 1.0;
 

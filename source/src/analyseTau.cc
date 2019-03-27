@@ -161,10 +161,66 @@ void analyseTauProcessor::processEvent( LCEvent * evt ) {
 
   int reco_imcMatch[2]={-1,-1};
 
+
+  //-----------------------------
+
+  LCRelationNavigator* relNavi(0);
+  try {
+    LCCollection* linkcol = evt->getCollection( "RecoMCTruthLink" );
+    relNavi = new LCRelationNavigator(linkcol);
+  } catch(DataNotAvailableException &e) {};
+
+  //-----------------------------
+
 //  PIDHandler* pidHandler;
+//  int myID ;
 //  try {
 //    LCCollection* pfocol = evt->getCollection( "PandoraPFOs");
 //    pidHandler=new PIDHandler(pfocol);
+//
+//    std::vector <int> allAlgoIds = pidHandler->getAlgorithmIDs ();
+//    for ( size_t i=0; i<allAlgoIds.size(); i++) {
+//      cout << "PID algo " << i << " " << allAlgoIds[i] << " " << pidHandler->getAlgorithmName ( allAlgoIds[i] ) << endl;
+//    }
+//
+//    int iLikePid =  pidHandler->getAlgorithmID( "LikelihoodPID" );
+//
+//    for (int j=0; j<pfocol->getNumberOfElements(); j++) {
+//      ReconstructedParticle* pfo = dynamic_cast<ReconstructedParticle*> (pfocol->getElementAt(j));
+//      cout << "particle " << j << " " << pfo->getEnergy() << " " << pfo->getType() << endl;
+//
+//
+//      MCParticle* bestmatch;
+//      if ( pfo->getCharge()==0 ) {
+//	bestmatch = tauUtils::getBestCaloMatch( pfo, relNavi );
+//      } else {
+//	bestmatch = tauUtils::getBestTrackMatch( pfo, relNavi );
+//      }
+//      
+//      cout << "mc particle match: ";
+//      if ( bestmatch) cout << bestmatch->getPDG();
+//      else cout << " NONE";
+//      cout << endl;
+//
+//      ParticleIDVec likePids = pidHandler->getParticleIDs ( pfo, iLikePid );
+//      for ( size_t ip=0; ip<likePids.size(); ip++ ) {
+//	cout << "  PID " << ip << " " << likePids[ip]->getPDG() << " " << likePids[ip]->getLikelihood() << endl;
+//      }
+//
+//      if ( pidHandler->getParticleID( pfo,  pidHandler->getAlgorithmID( "LikelihoodPID" ) ).getPDG() !=0 ) {
+//	cout <<  "pdg   " << pidHandler->getParticleID( pfo,  pidHandler->getAlgorithmID( "LikelihoodPID" ) ).getPDG() << " ";
+//	cout <<  "like  " << pidHandler->getParticleID( pfo,  pidHandler->getAlgorithmID( "LikelihoodPID" ) ).getLikelihood() << " ";
+//	cout <<  "el    " << pidHandler->getParticleID( pfo,  pidHandler->getAlgorithmID( "LikelihoodPID" ) ).getParameters()[0] << " ";
+//	cout <<  "mu    " << pidHandler->getParticleID( pfo,  pidHandler->getAlgorithmID( "LikelihoodPID" ) ).getParameters()[1] << " ";
+//	cout <<  "pi    " << pidHandler->getParticleID( pfo,  pidHandler->getAlgorithmID( "LikelihoodPID" ) ).getParameters()[2] << " ";
+//	cout <<  "ka    " << pidHandler->getParticleID( pfo,  pidHandler->getAlgorithmID( "LikelihoodPID" ) ).getParameters()[3] << " ";
+//	cout <<  "pr    " << pidHandler->getParticleID( pfo,  pidHandler->getAlgorithmID( "LikelihoodPID" ) ).getParameters()[4] << " ";
+//	cout << endl;
+//      }
+//
+//    }    
+//
+//
 //  } catch(DataNotAvailableException &e) {};
 
 
@@ -324,6 +380,8 @@ void analyseTauProcessor::processEvent( LCEvent * evt ) {
     }
   } catch(DataNotAvailableException &e) {};
 
+  if ( relNavi ) delete relNavi;
+
   return;
 }
 
@@ -345,7 +403,7 @@ void analyseTauProcessor::end(){
       if ( totcol>0 ) {
 	for (int jb=1; jb<=_h_mc_rec_decModeEff[i]->GetNbinsY(); jb++) {
 	
-	  cout << ib << " " << jb << " " << _h_mc_rec_decModeEff[i]->GetBinContent(ib,jb) << " " << totcol << endl;
+	  //cout << ib << " " << jb << " " << _h_mc_rec_decModeEff[i]->GetBinContent(ib,jb) << " " << totcol << endl;
 
 	  _h_mc_rec_decModeEff[i]->SetBinContent( ib,jb, 100.*_h_mc_rec_decModeEff[i]->GetBinContent(ib,jb)/totcol );
 	}
