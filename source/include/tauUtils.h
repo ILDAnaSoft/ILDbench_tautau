@@ -15,6 +15,11 @@
 
 #include "UTIL/LCRelationNavigator.h"
 
+#include "TMatrixDSym.h"
+#include "TMatrixD.h"
+#include "TVectorD.h"
+
+
 #include <cassert>
 
 class tauUtils {
@@ -27,13 +32,18 @@ class tauUtils {
   //  static TVector3 getDvector           ( const TrackState* tst , TVector3 IP );  // from IP to 2d PCA
   static TVector3 getDvector           ( const EVENT::TrackState* tst );
   static TVector3 getDvector           ( const EVENT::MCParticle* mc );
-  static void calculateTrackWRTip( const EVENT::TrackState* tst, TVector3& momentum, TVector3& dVec, TVector3& eVec , TVector3 IP );
+  static void calculateTrackWRTip      ( const EVENT::TrackState* tst, TVector3& momentum, TVector3& dVec, TVector3& eVec , TVector3 IP );
 
   static TVector3 getPolarimeter_rho ( TLorentzVector charged, TLorentzVector neutral, TLorentzVector neutrino );
   static TVector3 getPolarimeter_pi  ( TLorentzVector charged, TLorentzVector neutrino );
 
   static TLorentzVector getPolarimeterTLV_rho ( TLorentzVector charged, TLorentzVector neutral, TLorentzVector neutrino );
   static TLorentzVector getPolarimeterTLV_pi  ( TLorentzVector charged, TLorentzVector neutrino );
+
+  static TLorentzVector getVisibleTau4mom( EVENT::MCParticle* rp , bool onlyNeutral=false );
+  static TLorentzVector getVisibleNeutralTau4mom( EVENT::MCParticle* rp ) {return getVisibleTau4mom(rp, true);}
+
+  static std::vector < float > getClusterEigenvalues( const EVENT::Cluster* cl );
 
   static float getPhiStar ( TLorentzVector tau0, TVector3 pol0, TVector3 pol1 );
 
@@ -90,6 +100,11 @@ class tauUtils {
   static const double ecal_constant;
   static const double ctau_tau;
 
+
+  static TMatrixDSym errmat; //(3, &(temp[0][0]) );
+  static TMatrixD eigenVectors; //(3,3);
+  static TVectorD eigenValues; //(3);
+
   static void rouge_getThetaDphi( TLorentzVector charged0, TLorentzVector neutral0, TLorentzVector neutrino0,
 				  TLorentzVector charged1, TLorentzVector neutral1, TLorentzVector neutrino1,
 				  float & theta0, float& theta1, float& dPhi );
@@ -119,15 +134,23 @@ class tauUtils {
   static TLorentzVector getPolarimeterTLV (  TLorentzVector charged, TLorentzVector neutral, TLorentzVector neutrino, int decayMode );
   static TLorentzVector getPolarimeterTLV (  TLorentzVector charged, TLorentzVector neutral, TLorentzVector neutrino );
 
+  static float getLongPolarimeterFromEn_pi(  TLorentzVector charged, float assumedEnergy );
+  static float getLongPolarimeterFromEn_rho(  TLorentzVector charged, TLorentzVector neutral, float assumedEnergy );
+
+
   enum { decayChPi=0, decayRho, decayA1_1p, decayA1_3p , decayEl, decayMu , decayW , decayK , decayMultiprong , decayOthersingleprong, decayUnrecognised, NDECAYS};
 
   //  enum {TDEC_E=0,TDEC_M,TDEC_PI,TDEC_RHO,TDEC_A3P,TDEC_A1P,TDEC_HAD,TDEC_K, NDEC};
   //  TString decLab[NDEC];
 
+  static bool isNeutrino( EVENT::MCParticle* mc ) {
+    return abs( mc->getPDG() )==12 || abs( mc->getPDG() )==14 || abs( mc->getPDG() )==16;
+  }
 
   static TLorentzVector getTLV( EVENT::ReconstructedParticle* rp );
   static TLorentzVector getTLV( std::vector < EVENT::ReconstructedParticle* > rps );
   static TLorentzVector getTLV( EVENT::MCParticle* mc );
+  static TLorentzVector getTLV( std::vector < EVENT::MCParticle* > mcs );
   static std::vector < EVENT::MCParticle* > getstablemctauDaughters( EVENT::MCParticle* mctau );
   static std::vector < EVENT::MCParticle* > getmctauDaughters( EVENT::MCParticle* mctau, bool onlyStable=false );
   static EVENT::MCParticle* getBestTrackMatch( EVENT::ReconstructedParticle* pfo, UTIL::LCRelationNavigator* relNavi );

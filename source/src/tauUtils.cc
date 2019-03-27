@@ -32,6 +32,11 @@ const double tauUtils::Pi     = acos(-1);
 const double tauUtils::twoPi  = 2*Pi;
 const double tauUtils::halfPi = 0.5*Pi;
 
+TMatrixDSym tauUtils::errmat(3,3);
+TMatrixD    tauUtils::eigenVectors(3,3);
+TVectorD    tauUtils::eigenValues(3);
+
+
 TLorentzVector tauUtils::getFourMomentum( const Cluster* cl ) {
   double en = cl->getEnergy();
   double pos[3];
@@ -61,6 +66,55 @@ TLorentzVector tauUtils::getFourMomentum( const MCParticle* rp ) {
                          rp->getMomentum()[2],
                          rp->getEnergy() );
 }
+
+TLorentzVector tauUtils::getVisibleTau4mom( MCParticle* rp , bool onlyNeutral ) {
+  TLorentzVector fmom(0,0,0,0);
+  assert( rp && abs( rp->getPDG() )==15 );
+  std::vector < EVENT::MCParticle* > dds = getstablemctauDaughters(rp);
+  for ( size_t i=0; i<dds.size(); i++) {
+    MCParticle* mcd=dds[i];
+    if ( abs( mcd->getPDG() ) == 12 ) continue;
+    if ( abs( mcd->getPDG() ) == 14 ) continue;
+    if ( abs( mcd->getPDG() ) == 16 ) continue;
+    if ( !onlyNeutral || fabs( mcd->getCharge() ) < 0.1 ) {
+      fmom+=getFourMomentum(mcd);
+    }
+  }
+  return fmom;
+}
+
+std::vector < float > tauUtils::getClusterEigenvalues( const Cluster* cl ) {
+
+
+  double temp[3][3];
+  temp[0][0]=cl->getPositionError()[0];
+  temp[0][1]=cl->getPositionError()[1];
+  temp[0][2]=cl->getPositionError()[2];
+  temp[1][1]=cl->getPositionError()[3];
+  temp[1][2]=cl->getPositionError()[4];
+  temp[2][2]=cl->getPositionError()[5];
+  temp[1][0]=temp[0][1];
+  temp[2][0]=temp[0][2];
+  temp[2][1]=temp[1][2];
+
+  //TMatrixDSym errmat(3, &(temp[0][0]) );
+  //TMatrixD eigenVectors(3,3);
+  //TVectorD eigenValues(3);
+
+  errmat.ResizeTo(3,3);
+  errmat.SetMatrixArray( &(temp[0][0]) );
+
+  eigenVectors = errmat.EigenVectors( eigenValues );
+
+  std::vector <float> evals;
+  for (int kk=0; kk<3; kk++) {
+    evals.push_back( fabs(eigenValues[kk]) );
+  }
+  std::sort(evals.begin(), evals.end());
+
+  return evals;
+}
+
 
 // from IP to 2d PCA
 // this is the closest point to the ref point in 2d
@@ -120,6 +174,56 @@ TVector3 tauUtils::getDvector( const MCParticle* mc ) {
   // d = vtx + alpha*mom
   double alpha = -(vtx[0]*mom[0]+vtx[1]*mom[1])/(mom[0]*mom[0]+mom[1]*mom[1]); // closest approach in 2d
   return TVector3( vtx[0]+alpha*mom[0], vtx[1]+alpha*mom[1], vtx[2]+alpha*mom[2] );
+}
+
+
+float tauUtils::getLongPolarimeterFromEn_rho(  TLorentzVector charged, TLorentzVector neutral, float assumedEnergy ) {
+
+  // from Duflot thesis
+
+  float mtausq=pow(m_tau,2);
+
+  //	  float sqrts = 2.*etau;
+  float sqrts = 2.*assumedEnergy;
+  float s = pow(sqrts,2);
+
+  float eh = ( charged+neutral ).E();
+	  
+  float x = 2.*eh/sqrts;
+  float Qsq = (charged+neutral).M2();
+
+  // calculate cosPsi 
+  float cosPsi = ( x*( mtausq + Qsq ) - 2.*Qsq ) / ( (mtausq-Qsq)*sqrt( x*x - 4*Qsq/s )  );
+
+  // cosTheta	  
+  float gam = assumedEnergy/m_tau;
+  float beta = sqrt( gam*gam - 1 )/gam;
+  float ph_rf = (mtausq - Qsq)/(2*m_tau);
+  float eh_rf = sqrt( ph_rf*ph_rf + Qsq );
+  float cosTheta = ( eh - gam*eh_rf ) / ( gam*beta*ph_rf );
+
+  // cosBeta
+  TLorentzVector h=charged+neutral;
+  TLorentzVector n=charged;
+  n.Boost( -h.BoostVector() );
+  float cosBeta = cos ( n.Vect().Angle( h.BoostVector() ) );
+	  
+  float sin2Psi = sin( 2.*acos(cosPsi) );
+  float sinTheta = sqrt( 1. - pow( cosTheta,2 ) );
+
+  float threeCosPsiterm = (3.*cosPsi-1)/2.;
+  float threeCos2Betaterm = (3.*pow(cosBeta,2)-1)/2.;
+  float mtausqOnQsq = mtausq/Qsq;
+
+  return  
+    ( ( -2.+mtausqOnQsq+2.*(1.+mtausqOnQsq)*threeCosPsiterm*threeCos2Betaterm )*cosTheta + 3*sqrt(mtausqOnQsq)*threeCos2Betaterm*sin2Psi*sinTheta ) 
+    / 
+    ( 2. + mtausqOnQsq - 2.*(1.-mtausqOnQsq)*threeCosPsiterm*threeCos2Betaterm ) ;
+  
+}
+
+float tauUtils::getLongPolarimeterFromEn_pi(  TLorentzVector charged, float assumedEnergy ) {
+  return 2.*charged.E()/assumedEnergy - 1;
 }
 
 
@@ -764,6 +868,14 @@ TLorentzVector tauUtils::getTLV( MCParticle* mc ) {
 			 mc->getMomentum()[1],
 			 mc->getMomentum()[2],
 			 mc->getEnergy() );
+}
+
+TLorentzVector tauUtils::getTLV( std::vector < MCParticle* > mcs ) {
+  TLorentzVector tot(0,0,0,0);
+  for ( auto m : mcs ) {
+    tot+=getTLV(m);
+  }
+  return tot;
 }
 
 MCParticle* tauUtils::getBestTrackMatch(  ReconstructedParticle* pfo, UTIL::LCRelationNavigator* relNavi ) {

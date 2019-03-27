@@ -5,6 +5,7 @@
 #include "vertex_lcfi/inc/lciointerface.h"
 #include "vertex_lcfi/zvtop/include/VertexFitterKalman.h"
 #include "vertex_lcfi/zvtop/include/interactionpoint.h"
+#include <vertex_lcfi/util/inc/memorymanager.h>
 
 #include <TMatrixDSym.h>
 #include <TMatrixDSymEigen.h>
@@ -163,16 +164,19 @@ void vertexInfo::cleanup() {
   }
   myrecoparts.clear();
 
-  for ( size_t i=0; i<lcfi_tracks.size(); i++) {
-    delete lcfi_tracks[i];
-  }
-  lcfi_tracks.clear();
-
-
-  for ( size_t i=0; i<lcfi_trackstates.size(); i++) {
-    delete lcfi_trackstates[i];
-  }
-  lcfi_trackstates.clear();
-
+  // this cased crash at end of job
+  //   for ( size_t i=0; i<lcfi_tracks.size(); i++) {
+  //     delete lcfi_tracks[i];
+  //   }
+  //   lcfi_tracks.clear();
+  // 
+  //   for ( size_t i=0; i<lcfi_trackstates.size(); i++) {
+  //     delete lcfi_trackstates[i];
+  //   }
+  //   lcfi_trackstates.clear();
+  
+  // this avoids crashing at end of job
+  MetaMemoryManager::Event()->delAllObjects();
+  MetaMemoryManager::Run()->delAllObjects();
 
 }
