@@ -5,6 +5,8 @@
 #include "SimpleHelix.h"
 #include <CalorimeterHitType.h>
 
+#include "WeightedPoints3D.h"
+
 using std::cout;
 using std::endl;
 
@@ -67,7 +69,13 @@ TLorentzVector tauUtils::getFourMomentum( const MCParticle* rp ) {
                          rp->getEnergy() );
 }
 
-TLorentzVector tauUtils::getVisibleTau4mom( MCParticle* rp , bool onlyNeutral ) {
+//TLorentzVector tauUtils::getVisibleTau4mom( MCParticle* rp , bool onlyNeutral ) {
+TLorentzVector tauUtils::getVisibleTau4mom( MCParticle* rp , int subset ) {
+
+  // subset = 0 all visible
+  //   1 all neutral visible (no neutrinos)
+  //   2 only photons
+
   TLorentzVector fmom(0,0,0,0);
   assert( rp && abs( rp->getPDG() )==15 );
   std::vector < EVENT::MCParticle* > dds = getstablemctauDaughters(rp);
@@ -76,15 +84,112 @@ TLorentzVector tauUtils::getVisibleTau4mom( MCParticle* rp , bool onlyNeutral ) 
     if ( abs( mcd->getPDG() ) == 12 ) continue;
     if ( abs( mcd->getPDG() ) == 14 ) continue;
     if ( abs( mcd->getPDG() ) == 16 ) continue;
-    if ( !onlyNeutral || fabs( mcd->getCharge() ) < 0.1 ) {
+    if ( ( subset==0 ) ||
+	 ( subset==1 && fabs( mcd->getCharge() ) < 0.1 ) ||
+	 ( subset==2 && mcd->getPDG() == 22 ) ) {
       fmom+=getFourMomentum(mcd);
     }
   }
   return fmom;
 }
 
-std::vector < float > tauUtils::getClusterEigenvalues( const Cluster* cl ) {
+std::vector < float > tauUtils::getClusterEigenvalues( const Cluster* clu, const  LCParameters& colParams ) {
 
+  // using WeightedPoints3D class : copied from MarlinReco/Analysis/AddClusterProperties.cc ( debuging method )
+
+  const float* cogv = clu->getPosition();
+  std::vector<double> cog_fr_clu ;
+  for (int iii=0; iii<3 ; iii++) { cog_fr_clu.push_back(cogv[iii]);}
+  FloatVec PositionError = clu->getPositionError();
+  StringVec shape_keys ;
+  shape_keys = colParams.getStringVals( std::string("ClusterShapeParameters"),shape_keys);
+  FloatVec wgts_sumv = clu->getShape() ;
+  int npnt = 0 ;
+  double wgt_sum= 0.0;
+  double wgt_sq_sum= 0.0;
+  double wgt_4_sum= 0.0;
+  for ( unsigned kkk=0 ; kkk < shape_keys.size() ; kkk++ ) {
+    if ( shape_keys[kkk] == "npoints" )   {  npnt = int(wgts_sumv[kkk])  ; }
+    if ( shape_keys[kkk] == "sum_wgt" )   {  wgt_sum = wgts_sumv[kkk]  ; }
+    if ( shape_keys[kkk] == "sum_wgt^2" ) {  wgt_sq_sum = wgts_sumv[kkk]  ; }
+    if ( shape_keys[kkk] == "sum_wgt^4" ) {  wgt_4_sum = wgts_sumv[kkk]  ; }
+  }
+
+  double seen_covmat[3][3];
+  int nnn = 0;
+  for ( int kkk=0 ; kkk < 3 ; kkk++ ) {
+    for ( int lll=0 ; lll<=kkk ; lll++) {
+      seen_covmat[lll][kkk] =  PositionError[nnn]*wgt_sum*wgt_sum/wgt_sq_sum;
+      seen_covmat[kkk][lll] =  PositionError[nnn]*wgt_sum*wgt_sum/wgt_sq_sum;
+      nnn++ ;
+    }
+  }
+
+  std::vector<double>  cov_fr_clu ;
+  for( int jjj=0 ; jjj<3 ; jjj++) {for (int iii=0; iii<3 ; iii++) { cov_fr_clu.push_back(seen_covmat[jjj][iii]);}}
+  //          for (int iii=0; iii<6 ; iii++) { cov.push_back(PositionError[iii]);}
+  FloatVec DirectionError = clu->getDirectionError();
+  std::vector<double> thphcov;
+  for (int iii=0; iii<3 ; iii++) { thphcov.push_back(DirectionError[iii]);}
+  // a new WeightedPoints3D object, ctored with the cluster-shape params
+  WeightedPoints3D wgtp_readback = WeightedPoints3D(  cog_fr_clu, cov_fr_clu , thphcov ,npnt, wgt_sum , wgt_sq_sum , wgt_4_sum);
+  // read back stuff just entered
+  double* cog_readback=wgtp_readback.getCentreOfGravity();
+  double* covv=wgtp_readback.getCentreOfGravityErrors();
+  int     np_readback=wgtp_readback.getNumberOfPoints();
+  double  sum_wgt_readback=wgtp_readback.getTotalWeight();
+  double  sum_wgtsqr_readback=wgtp_readback.getTotalSquaredWeight();
+  double  sum_wgt4_readback=wgtp_readback.getTotalQuarticWeight();
+  double  cov_readback[3][3] ;
+  for( int iii=0 ; iii<3 ; iii++ ) { for ( int jjj=0 ; jjj<3 ; jjj++ ) { cov_readback[iii][jjj]=covv[jjj+iii*3] ; } } ;
+
+  // now get things not actually entered, but calculated.
+  double* evpv=wgtp_readback.getEigenVecPolar();
+  double  evp_readback[2][3] ;
+  for( int iii=0 ; iii<2 ; iii++ ) { for ( int jjj=0 ; jjj<3 ; jjj++ ) { evp_readback[iii][jjj]=evpv[jjj+iii*3] ; } } ;
+  double* evcv=wgtp_readback.getEigenVecCartesian();
+  double  evc_readback[3][3] ;
+  for( int iii=0 ; iii<3 ; iii++ ) { for ( int jjj=0 ; jjj<3 ; jjj++ ) { evc_readback[iii][jjj]=evcv[jjj+iii*3] ; } } ;
+  double* eval_readback=wgtp_readback.getEigenVal();
+  double* eval_err_readback=wgtp_readback.getEigenValErrors();
+  // this should be a mix of input and calculated: [][][3] is entry, the others calcuated. The latter should be
+  // different from the exact values from the points, since the fourth moments are missing.
+
+  double* evpev=wgtp_readback.getEigenVecPolarErrors();
+  double  evpe_readback[2][2][3] ;
+  for( int iii=0 ; iii<2 ; iii++ ) { for ( int jjj=0 ; jjj<2 ; jjj++ ) {for ( int kkk=0 ; kkk<3 ; kkk++ ) { evpe_readback[iii][jjj][kkk]=evpev[kkk+jjj*3+iii*3*2] ; } } };
+
+
+//  cout << " read back: cog                    " << cog_readback[0] << " " << cog_readback[1] << " " << cog_readback[2] <<  std::endl;
+//  cout << " read back: covariance mat         " << cov_readback[0][0] << " "  << cov_readback[0][1] << " " << cov_readback[0][2] <<   std::endl;
+//  cout << " read back: covariance mat         " << cov_readback[1][0] << " "  << cov_readback[1][1] << " " << cov_readback[1][2] <<   std::endl;
+//  cout << " read back: covariance mat         " << cov_readback[2][0] << " "  << cov_readback[2][1] << " " << cov_readback[2][2] <<   std::endl;
+//  cout << " read back: eigenvals              " << eval_readback[0] << " "  << eval_readback[1] << " "  << eval_readback[2] << std::endl;
+//  cout << " read back: V(eigenvals)           " << eval_err_readback[0] << " "  << eval_err_readback[1] << " "  << eval_err_readback[2] << std::endl;
+//  cout << " read back: eigen vec 1 (p)        " << evp_readback[0][0] << " "  << evp_readback[1][0] <<  std::endl;
+//  cout << " read back: eigen vec 2 (p)        " << evp_readback[0][1] << " "  << evp_readback[1][1] <<  std::endl;
+//  cout << " read back: eigen vec 3 (p)        " << evp_readback[0][2] << " "  << evp_readback[1][2] <<  std::endl;
+//  cout << " read back: cov(eigen vec) 1 (p)   " << evpe_readback[0][0][0] << " "  << evpe_readback[1][1][0] << " "  << evpe_readback[1][0][0] <<  std::endl;
+//  cout << " read back: cov(eigen vec) 2 (p)   " << evpe_readback[0][0][1] << " "  << evpe_readback[1][1][1] << " "  << evpe_readback[1][0][1] <<  std::endl;
+//  cout << " read back: cov(eigen vec) 3 (p)   " << evpe_readback[0][0][2] << " "  << evpe_readback[1][1][2] << " "  << evpe_readback[1][0][2] <<  std::endl;
+//  cout << " read back: eigen vec 1 (c)        " << evc_readback[0][0] << " "  << evc_readback[1][0] << " "  << evc_readback[1][0] << std::endl;
+//  cout << " read back: eigen vec 2 (c)        " << evc_readback[0][1] << " "  << evc_readback[1][1] << " "  << evc_readback[1][1] << std::endl;
+//  cout << " read back: eigen vec 3 (c)        " << evc_readback[0][2] << " "  << evc_readback[1][2] << " "  << evc_readback[1][2] << std::endl;
+//  cout << " read back: E, np, sum, sum_sq, sum_4 " << clu->getEnergy() << " " << np_readback << " " << sum_wgt_readback << " " << sum_wgtsqr_readback << " " << sum_wgt4_readback <<  std::endl;
+  
+//  cout << eval_readback [0] << " " << eval_readback[1] << " " << eval_readback[2] << endl;
+  
+  std::vector <float> evals;
+  evals.push_back( eval_readback[0] );
+  evals.push_back( eval_readback[1] );
+  evals.push_back( eval_readback[2] );
+
+  return evals;
+}
+
+std::vector < float > tauUtils::getClusterEigenvalues_DJ( const Cluster* cl ) {
+
+  // using my calculation
 
   double temp[3][3];
   temp[0][0]=cl->getPositionError()[0];
@@ -97,9 +202,17 @@ std::vector < float > tauUtils::getClusterEigenvalues( const Cluster* cl ) {
   temp[2][0]=temp[0][2];
   temp[2][1]=temp[1][2];
 
-  //TMatrixDSym errmat(3, &(temp[0][0]) );
-  //TMatrixD eigenVectors(3,3);
-  //TVectorD eigenValues(3);
+//  for (int i=0; i<3; i++) {
+//    for (int j=0; j<3; j++) {
+//      cout << temp[i][j] << " ";
+//    }
+//    cout << endl;
+//  }
+
+
+  // TMatrixDSym errmat(3, &(temp[0][0]) );
+  // TMatrixD eigenVectors(3,3);
+  // TVectorD eigenValues(3);
 
   errmat.ResizeTo(3,3);
   errmat.SetMatrixArray( &(temp[0][0]) );

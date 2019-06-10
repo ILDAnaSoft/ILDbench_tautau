@@ -88,6 +88,7 @@ void danielKeitaTauFinderProcessor::init() {
 
 
   h_mctautau_ecom_tauMinusCosth = new TH2F( "mctautau_ecom_tauMinusCosth",  "mctautau_ecom_tauMinusCosth", 100,0,500, 100, -1, 1 );
+  h_mctautau_ecom_tauMinusHel = new TH2F( "mctautau_ecom_tauMinusHel",  "mctautau_ecom_tauMinusHel", 100,0,500, 3, -1.5, 1.5);
 
 
   h_gammaClus_nMajor           = new  TH1F("gammaClus_nMajor",        "gammaClus_nMajor",        10,-0.5, 9.5 );
@@ -99,7 +100,7 @@ void danielKeitaTauFinderProcessor::init() {
   h_neutronClus_nSignf_bMass   = new  TH2F("neutronClus_nSignf_bMass","neutronClus_nSignf_bMass",10,-0.5, 9.5,100,0,1 );
   h_neutronClus_nSignf_bDist   = new  TH2F("neutronClus_nSignf_bDist","neutronClus_nSignf_bDist",10,-0.5, 9.5,100,0,100 );
 
-  h_neutronClus_eOnP_beforeAfter = new TH2F( "neutronClus_eOnP_beforeAfter",  "neutronClus_eOnP_beforeAfter", 100, 0, 10, 100, 0, 10 );
+  h_neutronClus_eOnP_beforeAfter = new TH2F( "neutronClus_eOnP_beforeAfter",  "neutronClus_eOnP_beforeAfter", 100, 0, 5, 100, 0, 5 );
 
   h_neutralHadronPFO_mainMCcontrib_pdgEn = new TH2F("neutralHadronPFO_mainMCcontrib_pdgEn", "neutralHadronPFO_mainMCcontrib_pdgEn", 100, 0, 100, 10, -0.5, 9.5 );
   h_neutralHadronPFO_mainMCcontrib_pdgEn->GetYaxis()->SetBinLabel( 1, "undef" );
@@ -119,13 +120,25 @@ void danielKeitaTauFinderProcessor::init() {
   h_rhoDecaySinglePhoClus_reason->GetXaxis()->SetBinLabel( 7, "attachedToChg" );
   h_rhoDecaySinglePhoClus_reason->GetXaxis()->SetBinLabel( 10, "other" );
 
-  h_rhoDecaySinglePhoClus_mergedGammaClusterEvals = new TH2F( "rhoDecaySinglePhoClus_mergedGammaClusterEvals", "rhoDecaySinglePhoClus_mergedGammaClusterEvals", 100,0,20,100,0,20);
-  h_rhoDecaySinglePhoClus_singleGammaClusterEvals = new TH2F( "rhoDecaySinglePhoClus_singleGammaClusterEvals", "rhoDecaySinglePhoClus_singleGammaClusterEvals", 100,0,20,100,0,20);
+  h_rhoDecaySinglePhoClus_mergedGammaClusterEval1 = new TH2F( "rhoDecaySinglePhoClus_mergedGammaClusterEval1", "rhoDecaySinglePhoClus_mergedGammaClusterEval1", 100,0,200,100,0,500);
+  h_rhoDecaySinglePhoClus_singleGammaClusterEval1 = new TH2F( "rhoDecaySinglePhoClus_singleGammaClusterEval1", "rhoDecaySinglePhoClus_singleGammaClusterEval1", 100,0,200,100,0,500);
 
+  h_rhoDecaySinglePhoClus_mergedGammaClusterEval2 = new TH2F( "rhoDecaySinglePhoClus_mergedGammaClusterEval2", "rhoDecaySinglePhoClus_mergedGammaClusterEval2", 100,0,200,100,0,500);
+  h_rhoDecaySinglePhoClus_singleGammaClusterEval2 = new TH2F( "rhoDecaySinglePhoClus_singleGammaClusterEval2", "rhoDecaySinglePhoClus_singleGammaClusterEval2", 100,0,200,100,0,500);
+
+  h_rhoDecaySinglePhoClus_mergedGammaClusterEvalRatio = new TH2F( "rhoDecaySinglePhoClus_mergedGammaClusterEvalRatio", "rhoDecaySinglePhoClus_mergedGammaClusterEvalRatio", 100,0,200,100,0,1);
+  h_rhoDecaySinglePhoClus_singleGammaClusterEvalRatio = new TH2F( "rhoDecaySinglePhoClus_singleGammaClusterEvalRatio", "rhoDecaySinglePhoClus_singleGammaClusterEvalRatio", 100,0,200,100,0,1);
+
+  h_rhoDecaySinglePhoClus_mergedGammaMCEns = new TH2F( "rhoDecaySinglePhoClus_mergedGammaMCEns", "rhoDecaySinglePhoClus_mergedGammaMCEns",100,0,200,100,0,200);
+  h_rhoDecaySinglePhoClus_mergedGammaMCAngle = new TH1F( "rhoDecaySinglePhoClus_mergedGammaMCAngle", "rhoDecaySinglePhoClus_mergedGammaMCAngle",100,0,0.05);
 
   for (int iss=0; iss<NCLASS; iss++) {
     TString samp="sample";
     samp+=iss; samp+="_";
+
+
+    h_mctautau_tauMinusCosth_tauMinusHel[iss] = new TH2F( samp+ "mctautau_tauMinusCosth_tauMinusHel",  samp+ "mctautau_tauMinusCosth_tauMinusHel", 110, -1.1, 1.1, 3, -1.5, 1.5);
+
 
     h_nIsoMuons[iss] = new TH1F(  samp+ "nIsoMuons",  samp+ "nIsoMuons", 10, -0.5, 9.5 );
     h_nIsoElectrons[iss] = new TH1F(  samp+ "nIsoElectrons",  samp+ "nIsoElectrons", 10, -0.5, 9.5 );
@@ -162,7 +175,6 @@ void danielKeitaTauFinderProcessor::init() {
     h_pi_mcPolarApproxCheatEn_helPos[iss]  = new TH1F( samp+  "pi_mcPolarApproxCheatEn_helPos",  samp+  "pi_mcPolarApproxCheatEn_helPos", 110, -1.1, 1.1 );
     h_rho_mcPolarApproxCheatEn_helNeg[iss] = new TH1F( samp+ "rho_mcPolarApproxCheatEn_helNeg",  samp+ "rho_mcPolarApproxCheatEn_helNeg", 110, -1.1, 1.1);
     h_rho_mcPolarApproxCheatEn_helPos[iss] = new TH1F( samp+ "rho_mcPolarApproxCheatEn_helPos",  samp+ "rho_mcPolarApproxCheatEn_helPos", 110, -1.1, 1.1);
-
 
 
     h_pi_mcPolarApprox[iss] = new TH1F( samp+ "pi_mcPolarApprox",  samp+ "pi_mcPolarApprox", 110, -1.1, 1.1 );
@@ -262,9 +274,14 @@ void danielKeitaTauFinderProcessor::init() {
       if      (idec==NDEC-2) lab="OTHER";
       else if (idec==NDEC-1)   lab="ALL";
 
-      h_dec_seed_clusterWidth1[iss][idec] = new TH1F( samp+"_"+lab+"_seed_logclusterWidth1", samp+"_"+lab+"_seed_logclusterWidth1", 100,-1,7);
-      h_dec_seed_clusterWidth2[iss][idec] = new TH1F( samp+"_"+lab+"_seed_logclusterWidth2", samp+"_"+lab+"_seed_logclusterWidth2", 100,-1,7);
-      h_dec_seed_clusterLength[iss][idec] = new TH1F( samp+"_"+lab+"_seed_logclusterLength", samp+"_"+lab+"_seed_logclusterLength", 100,-1,7);
+      h_dec_seed_clusterWidth1[iss][idec] = new TH1F( samp+"_"+lab+"_seed_logclusterWidth1", samp+"_"+lab+"_seed_logclusterWidth1", 100,0, 8);
+      h_dec_seed_clusterWidth2[iss][idec] = new TH1F( samp+"_"+lab+"_seed_logclusterWidth2", samp+"_"+lab+"_seed_logclusterWidth2", 100,0, 8);
+      h_dec_seed_clusterWidthRatio[iss][idec] = new TH1F( samp+"_"+lab+"_seed_logclusterWidthRatio", samp+"_"+lab+"_seed_logclusterWidthRatio", 100,0, 1);
+      h_dec_seed_clusterLength[iss][idec] = new TH1F( samp+"_"+lab+"_seed_logclusterLength", samp+"_"+lab+"_seed_logclusterLength", 100,0, 8);
+
+      //h_dec_seed_clusterWidth1b[iss][idec] = new TH1F( samp+"_"+lab+"_seed_logclusterWidth1b", samp+"_"+lab+"_seed_logclusterWidth1b", 100,-1,7);
+      //h_dec_seed_clusterWidth2b[iss][idec] = new TH1F( samp+"_"+lab+"_seed_logclusterWidth2b", samp+"_"+lab+"_seed_logclusterWidth2b", 100,-1,7);
+      //h_dec_seed_clusterLengthb[iss][idec] = new TH1F( samp+"_"+lab+"_seed_logclusterLengthb", samp+"_"+lab+"_seed_logclusterLengthb", 100,-1,7);
 
       h_dec_seed_energy[iss][idec] = new TH1F( samp+"_"+lab+"_seed_energy", samp+"_"+lab+"_seed_energy", 100,0,300);
 
@@ -295,8 +312,8 @@ void danielKeitaTauFinderProcessor::init() {
       h_dec_cone_vis_neutral_Mass_3g[iss][idec] = new TH2F( samp+"_"+lab+"_cone_vis_neutral_Mass_3g",   samp+"_"+lab+"_cone_vis_neutral_Mass_3g", 100, 0, 3, 100, 0, 3 );
       h_dec_cone_vis_neutral_Mass_4g[iss][idec] = new TH2F( samp+"_"+lab+"_cone_vis_neutral_Mass_4g",   samp+"_"+lab+"_cone_vis_neutral_Mass_4g", 100, 0, 3, 100, 0, 3 );
 
-      h_dec_cone_visEnergyDiff    [iss][idec] = new TH1F( samp+"_"+lab+"_cone_visEnergyDiff",     samp+"_"+lab+"_cone_visEnergyDiff", 100, -50,50 );
-      h_dec_cone_neutralvisEnergyDiff[iss][idec] = new TH1F( samp+"_"+lab+"_cone_neutralvisEnergyDiff", samp+"_"+lab+"_cone_neutralvisEnergyDiff", 100, -50,50 );
+      h_dec_cone_visEnergyDiff    [iss][idec] = new TH1F( samp+"_"+lab+"_cone_visEnergyDiff",     samp+"_"+lab+"_cone_visEnergyDiff", 200, -20,20 );
+      h_dec_cone_neutralvisEnergyDiff[iss][idec] = new TH1F( samp+"_"+lab+"_cone_neutralvisEnergyDiff", samp+"_"+lab+"_cone_neutralvisEnergyDiff", 200, -20,20 );
 
       // h_dec_coneTRIM_visMass    [iss][idec] = new TH1F( samp+"_"+lab+"_coneTRIM_visMass",     samp+"_"+lab+"_coneTRIM_visMass", 100, 0, 2 );
       // h_dec_coneTRIM_neutralvisMass[iss][idec] = new TH1F( samp+"_"+lab+"_coneTRIM_neutralvisMass", samp+"_"+lab+"_coneTRIM_neutralvisMass", 100, 0, 2 );
@@ -323,9 +340,15 @@ void danielKeitaTauFinderProcessor::init() {
       h_dec_mcall_cone_visneutralmass  [iss][idec] = new TH1F( samp+"_"+lab+"_mcall_cone_visneutralmass", samp+"_"+lab+"_mcall_cone_visneutralmass", 100, 0, 3 );
 
 
-      hSEL_dec_seed_clusterWidth1[iss][idec]  = new TH1F( samp+"_"+lab+"_SELseed_logclusterWidth1",  samp+"_"+lab+"_SELseed_logclusterWidth1", 100,-1,7);
-      hSEL_dec_seed_clusterWidth2[iss][idec]  = new TH1F( samp+"_"+lab+"_SELseed_logclusterWidth2",  samp+"_"+lab+"_SELseed_logclusterWidth2", 100,-1,7);
-      hSEL_dec_seed_clusterLength[iss][idec] = new TH1F( samp+"_"+lab+"_SELseed_logclusterLength", samp+"_"+lab+"_SELseed_logclusterLength", 100,-1,7);
+      hSEL_dec_seed_clusterWidth1[iss][idec]  = new TH1F( samp+"_"+lab+"_SELseed_logclusterWidth1",  samp+"_"+lab+"_SELseed_logclusterWidth1", 100,0, 8);
+      hSEL_dec_seed_clusterWidth2[iss][idec]  = new TH1F( samp+"_"+lab+"_SELseed_logclusterWidth2",  samp+"_"+lab+"_SELseed_logclusterWidth2", 100,0, 8);
+      hSEL_dec_seed_clusterWidthRatio[iss][idec]  = new TH1F( samp+"_"+lab+"_SELseed_logclusterWidthRatio",  samp+"_"+lab+"_SELseed_logclusterWidthRatio", 100,0, 1);
+      hSEL_dec_seed_clusterLength[iss][idec]  = new TH1F( samp+"_"+lab+"_SELseed_logclusterLength",  samp+"_"+lab+"_SELseed_logclusterLength", 100,0, 8);
+
+      //hSEL_dec_seed_clusterWidth1b[iss][idec]  = new TH1F( samp+"_"+lab+"_SELseed_logclusterWidth1b",  samp+"_"+lab+"_SELseed_logclusterWidth1b", 100,-1,7);
+      //hSEL_dec_seed_clusterWidth2b[iss][idec]  = new TH1F( samp+"_"+lab+"_SELseed_logclusterWidth2b",  samp+"_"+lab+"_SELseed_logclusterWidth2b", 100,-1,7);
+      //hSEL_dec_seed_clusterLengthb[iss][idec] = new TH1F( samp+"_"+lab+"_SELseed_logclusterLengthb", samp+"_"+lab+"_SELseed_logclusterLengthb", 100,-1,7);
+
       hSEL_dec_seed_energy[iss][idec]        = new TH1F( samp+"_"+lab+"_SELseed_energy",           samp+"_"+lab+"_SELseed_energy", 100,0,300);
 
 
@@ -353,8 +376,8 @@ void danielKeitaTauFinderProcessor::init() {
       hSEL_dec_cone_visMassDiff    [iss][idec]    = new TH1F( samp+"_"+lab+"_SELcone_visMassDiff",        samp+"_"+lab+"_SELcone_visMassDiff", 100, -1,1 );
       hSEL_dec_cone_neutralvisMassDiff[iss][idec] = new TH1F( samp+"_"+lab+"_SELcone_neutralvisMassDiff", samp+"_"+lab+"_SELcone_neutralvisMassDiff", 100, -1,1 );
 
-      hSEL_dec_cone_visEnergyDiff    [iss][idec]    = new TH1F( samp+"_"+lab+"_SELcone_visEnergyDiff",        samp+"_"+lab+"_SELcone_visEnergyDiff", 100, -50,50 );
-      hSEL_dec_cone_neutralvisEnergyDiff[iss][idec] = new TH1F( samp+"_"+lab+"_SELcone_neutralvisEnergyDiff", samp+"_"+lab+"_SELcone_neutralvisEnergyDiff", 100, -50,50 );
+      hSEL_dec_cone_visEnergyDiff    [iss][idec]    = new TH1F( samp+"_"+lab+"_SELcone_visEnergyDiff",        samp+"_"+lab+"_SELcone_visEnergyDiff", 200, -20,20 );
+      hSEL_dec_cone_neutralvisEnergyDiff[iss][idec] = new TH1F( samp+"_"+lab+"_SELcone_neutralvisEnergyDiff", samp+"_"+lab+"_SELcone_neutralvisEnergyDiff", 200, -20,20 );
 
       hSEL_dec_coneTRIM_visMass    [iss][idec]    = new TH1F( samp+"_"+lab+"_SELconeTRIM_visMass",        samp+"_"+lab+"_SELconeTRIM_visMass", 100, 0, 2 );
       hSEL_dec_coneTRIM_neutralvisMass[iss][idec] = new TH1F( samp+"_"+lab+"_SELconeTRIM_neutralvisMass", samp+"_"+lab+"_SELconeTRIM_neutralvisMass", 100, 0, 2 );
@@ -370,8 +393,8 @@ void danielKeitaTauFinderProcessor::init() {
       hSEL_dec_coneTRIM_visMassDiff    [iss][idec]    = new TH1F( samp+"_"+lab+"_SELconeTRIM_visMassDiff",        samp+"_"+lab+"_SELconeTRIM_visMassDiff", 100, -1,1 );
       hSEL_dec_coneTRIM_neutralvisMassDiff[iss][idec] = new TH1F( samp+"_"+lab+"_SELconeTRIM_neutralvisMassDiff", samp+"_"+lab+"_SELconeTRIM_neutralvisMassDiff", 100, -1,1 );
 
-      hSEL_dec_coneTRIM_visEnergyDiff    [iss][idec]    = new TH1F( samp+"_"+lab+"_SELconeTRIM_visEnergyDiff",        samp+"_"+lab+"_SELconeTRIM_visEnergyDiff", 100, -50,50 );
-      hSEL_dec_coneTRIM_neutralvisEnergyDiff[iss][idec] = new TH1F( samp+"_"+lab+"_SELconeTRIM_neutralvisEnergyDiff", samp+"_"+lab+"_SELconeTRIM_neutralvisEnergyDiff", 100, -50,50 );
+      hSEL_dec_coneTRIM_visEnergyDiff    [iss][idec]    = new TH1F( samp+"_"+lab+"_SELconeTRIM_visEnergyDiff",        samp+"_"+lab+"_SELconeTRIM_visEnergyDiff", 200, -20,20 );
+      hSEL_dec_coneTRIM_neutralvisEnergyDiff[iss][idec] = new TH1F( samp+"_"+lab+"_SELconeTRIM_neutralvisEnergyDiff", samp+"_"+lab+"_SELconeTRIM_neutralvisEnergyDiff", 200, -20,20 );
 
     }
 
@@ -388,9 +411,14 @@ void danielKeitaTauFinderProcessor::init() {
     h_maxSeedEn_caloen[iss] = new TH1F( samp+"maxSeedEn_caloen", samp+"maxSeedEn_caloen", 100, 0, 50. );
     h_minSeedEn_caloen[iss] = new TH1F( samp+"minSeedEn_caloen", samp+"minSeedEn_caloen", 100, 0, 50. );
 
-    h_seedClusterWidth1[iss] = new TH1F( samp+"logseedClusterWidth1",  samp+"logseedClusterWidth1", 100, -1, 7 );
-    h_seedClusterWidth2[iss] = new TH1F( samp+"logseedClusterWidth2",  samp+"logseedClusterWidth2", 100, -1, 7 );
-    h_seedClusterLength[iss] = new TH1F( samp+"logseedClusterLength",  samp+"logseedClusterLength", 100, -1, 7 );
+    h_seedClusterWidth1[iss] = new TH1F( samp+"logseedClusterWidth1",  samp+"logseedClusterWidth1", 100, 0, 8 );
+    h_seedClusterWidth2[iss] = new TH1F( samp+"logseedClusterWidth2",  samp+"logseedClusterWidth2", 100, 0, 8 );
+    h_seedClusterWidthRatio[iss] = new TH1F( samp+"logseedClusterWidthRatio",  samp+"logseedClusterWidthRatio", 100, 0, 1 );
+    h_seedClusterLength[iss] = new TH1F( samp+"logseedClusterLength",  samp+"logseedClusterLength", 100, 0, 8 );
+
+    //h_seedClusterWidth1b[iss] = new TH1F( samp+"logseedClusterWidth1b",  samp+"logseedClusterWidth1b", 100, -1, 7 );
+    //h_seedClusterWidth2b[iss] = new TH1F( samp+"logseedClusterWidth2b",  samp+"logseedClusterWidth2b", 100, -1, 7 );
+    //h_seedClusterLengthb[iss] = new TH1F( samp+"logseedClusterLengthb",  samp+"logseedClusterLengthb", 100, -1, 7 );
 
     h_seedEcalEn[iss] = new TH1F( samp+"seedEcalEn", samp+"seedEcalEn", 100, 0, 300 );
     h_seedEcalEonP[iss] = new TH1F( samp+"seedEcalEonP", samp+"seedEcalEonP", 100, 0, 3 );    
@@ -428,6 +456,11 @@ void danielKeitaTauFinderProcessor::init() {
     hSEL_rec_rho_pol_MCneg  [iss] = new TH1F( samp+"SEL_rec_rho_pol_MCneg"  , samp+"SEL_rec_rho_pol_MCneg"  , 150, -1.5, 1.5 );
     hSEL_rec_rho_pol_MCoth  [iss] = new TH1F( samp+"SEL_rec_rho_pol_MCoth"  , samp+"SEL_rec_rho_pol_MCoth"  , 150, -1.5, 1.5 );
     hSEL_rec_rho_coneMass [iss] = new TH1F( samp+"SEL_rec_rho_coneMass"  ,samp+"SEL_rec_rho_coneMass"  , 100, 0, 2 );
+
+    hSEL_recCheatGam_rho_pol[iss] = new TH1F( samp+"SEL_recCheatGam_rho_pol",  samp+"SEL_recCheatGam_rho_pol", 150, -1.5, 1.5 );
+    hSEL_recCheatGam_rho_pol_MCpos[iss] = new TH1F( samp+"SEL_recCheatGam_rho_pol_MCpos",  samp+"SEL_recCheatGam_rho_pol_MCpos", 150, -1.5, 1.5 );
+    hSEL_recCheatGam_rho_pol_MCneg[iss] = new TH1F( samp+"SEL_recCheatGam_rho_pol_MCneg",  samp+"SEL_recCheatGam_rho_pol_MCneg", 150, -1.5, 1.5 );
+    hSEL_recCheatGam_rho_pol_MCoth[iss] = new TH1F( samp+"SEL_recCheatGam_rho_pol_MCoth",  samp+"SEL_recCheatGam_rho_pol_MCoth", 150, -1.5, 1.5 );
 
     hSEL_rec_a1p_mcdec[iss] = new TH1F( samp+"SEL_rec_a1p_mcdec", samp+"SEL_rec_a1p_mcdec", tauUtils::NDECAYS+1,-1.5,tauUtils::NDECAYS-0.5 );
     hSEL_rec_a1p_pol  [iss] = new TH1F( samp+"SEL_rec_a1p_pol"  , samp+"SEL_rec_a1p_pol"  , 100, -1., 1. );
@@ -544,7 +577,9 @@ void danielKeitaTauFinderProcessor::processRunHeader( LCRunHeader* run) {
 
 void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) { 
 
-  //  cout << "processEvent " << evt->getEventNumber() << endl;
+  bool verboseFF=false;
+
+  if (verboseFF) cout << "processEvent " << evt->getEventNumber() << endl;
 
   int isample(0); // MC sample - 0:high mass tt, 1:med mass tt, 2: lowmass tt, 3: mm
 
@@ -564,25 +599,40 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
   TLorentzVector mcTauVis4mom[2];
   TLorentzVector mcTauNeutralVis4mom[2];
 
+  TLorentzVector mcTauGammaVis4mom[2];
+
   float mctauhelicity[2]={0,0};
   float mcexactPolarimeter[2]={-99,-99};
   float mcapproxPolarimeter[2]={-99,-99};
   float mcapproxCheatEnPolarimeter[2]={-99,-99};
 
 
+
   MCParticle* mctauminus(0);
+  MCParticle* mctauplus(0);
 
   TVector3 pvposMC(-99,-99,-99);
 
   float mctauMinusCosTh(-2);
 
-  classLabels[0]="2T,HM,h";
-  classLabels[1]="2T,HM,l";
-  classLabels[2]="2T,MM";
-  classLabels[3]="2T,LM";
-  classLabels[4]="0T";
-  classLabels[5]="1T";
-  classLabels[6]="gt2T";
+  //  classLabels[0]="2T,HM,h";
+  //  classLabels[1]="2T,HM,l";
+  //  classLabels[2]="2T,MM";
+  //  classLabels[3]="2T,LM";
+  //  classLabels[4]="0T";
+  //  classLabels[5]="1T";
+  //  classLabels[6]="gt2T";
+
+  classLabels[0]="2T,480,hh";
+  classLabels[1]="2T,480,hl";
+  classLabels[2]="2T,480,ll";
+  classLabels[3]="2T,250,hh";
+  classLabels[4]="2T,250,hl";
+  classLabels[5]="2T,250,ll";
+  classLabels[6]="2T,<250";
+  classLabels[7]="0T";
+  classLabels[8]="1T";
+  classLabels[9]=">2T";
 
 
   try {
@@ -590,9 +640,11 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 
     finalmctaus = tauUtils::findFinalTaus( mccol );
 
-    if ( finalmctaus.size()==0 ) isample=4;
-    else if ( finalmctaus.size()==1 ) isample=5;
-    else if ( finalmctaus.size()!=2 ) isample=6;
+    if (verboseFF) cout << "nmctaus = " << finalmctaus.size() << endl;
+
+    if ( finalmctaus.size()==0 ) isample=7;
+    else if ( finalmctaus.size()==1 ) isample=8;
+    else if ( finalmctaus.size()!=2 ) isample=9;
     else {
 
       for (size_t i=0; i<finalmctaus.size(); i++) {
@@ -608,6 +660,7 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 	mcTau4mom[i] = tauUtils::getTLV( finalmctaus[i] );
 	mcTauVis4mom[i] = tauUtils::getVisibleTau4mom( finalmctaus[i] );
 	mcTauNeutralVis4mom[i] = tauUtils::getVisibleNeutralTau4mom( finalmctaus[i] );
+	mcTauGammaVis4mom[i] = tauUtils::getVisibleGammaTau4mom( finalmctaus[i] );
 
 	stableMCtaudaughtersInCone[i].clear();
 	stableMCallInCone[i].clear();
@@ -663,15 +716,46 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
       }
 
       tautauInvMass = ( mcTau4mom[0] + mcTau4mom[1] ).M();
+
+      int nhadDec=0;
+      for (int i=0; i<2; i++) {
+	if ( MCdecayMode[i] != tauUtils::decayEl && MCdecayMode[i] != tauUtils::decayMu ) 
+	  nhadDec++;
+      }
+
+
+      // updated classification (apr 2019)
+      //  classLabels[0]="2T,480,hh";
+      //  classLabels[1]="2T,480,hl";
+      //  classLabels[2]="2T,480,ll";
+      //  classLabels[3]="2T,250,hh";
+      //  classLabels[4]="2T,250,hl";
+      //  classLabels[5]="2T,250,ll";
+      //  classLabels[6]="2T,<250";
+
       if ( tautauInvMass > 480 ) {
-	if ( MCdecayMode[0] != tauUtils::decayEl && MCdecayMode[0] != tauUtils::decayMu &&
-	     MCdecayMode[1] != tauUtils::decayEl && MCdecayMode[1] != tauUtils::decayMu ) {
-	  isample=0;
-	} else {
-	  isample=1;
-	}
-      } else if ( tautauInvMass > 75 ) isample=2;
-      else isample=3;
+	if      ( nhadDec==2 ) isample=0;
+	else if ( nhadDec==1 ) isample=1;
+	else                   isample=2;
+      } else if ( tautauInvMass > 250 ) {
+	if      ( nhadDec==2 ) isample=3;
+	else if ( nhadDec==1 ) isample=4;
+	else                   isample=5;
+      } else {
+	isample=6;
+      }
+
+      if (verboseFF) cout << "isample = " << isample << endl;
+
+
+      //	if ( MCdecayMode[0] != tauUtils::decayEl && MCdecayMode[0] != tauUtils::decayMu &&
+      //	     MCdecayMode[1] != tauUtils::decayEl && MCdecayMode[1] != tauUtils::decayMu ) {
+      //	  isample=0;
+      //	} else {
+      //	  isample=1;
+      //	}
+      //      } else if ( tautauInvMass > 75 ) isample=2;
+      //      else isample=3;
 
       taucosth[0] = fabs( mcTau4mom[0].Vect().CosTheta() );
       taucosth[1] = fabs( mcTau4mom[1].Vect().CosTheta() );
@@ -681,17 +765,38 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 	taucosth[1] = temp;
       }
 
+      if (verboseFF) cout << "blah0" << endl;
       
-      if      ( finalmctaus[0]->getCharge()<0 ) mctauminus=finalmctaus[0];
-      else if ( finalmctaus[1]->getCharge()<0 ) mctauminus=finalmctaus[1];
+      if      ( finalmctaus[0]->getCharge()<0 ) {
+	mctauminus=finalmctaus[0];
+	mctauplus =finalmctaus[1];
+      } else if ( finalmctaus[1]->getCharge()<0 ) {
+	mctauminus=finalmctaus[1];
+	mctauplus =finalmctaus[0];
+      } else {
+	cout << "2 MC taus with same charge! " << finalmctaus[0]->getCharge() << " " << finalmctaus[1]->getCharge() << endl;
+      }
+
+      if (verboseFF) cout << "blah1" << endl;
+
       if ( mctauminus ) {
 	mctauMinusCosTh = tauUtils::getTLV(mctauminus).Vect().CosTheta();
 	h_mc_tauMinus_costh[isample]->Fill( mctauMinusCosTh );
 	h_mctautau_ecom_tauMinusCosth->Fill(tautauInvMass, mctauMinusCosTh);
+	h_mctautau_ecom_tauMinusHel->Fill( tautauInvMass, mctauminus->getSpin()[2] );
+
+	h_mctautau_tauMinusCosth_tauMinusHel[isample]->Fill( mctauMinusCosTh,  mctauminus->getSpin()[2] );
+
       }
 
-      h_mc_tauSpin[isample]->Fill( finalmctaus[0]->getSpin()[2],  finalmctaus[1]->getSpin()[2] );
+      if (verboseFF) {
+	cout << "blah2   " << mctauminus << " " << mctauplus << endl;
+	//	cout << "blah2.1 " << mctauminus->getSpin() << " " << mctauplus->getSpin() << endl;
+      }
 
+      if ( mctauminus ) h_mc_tauSpin[isample]->Fill( mctauminus->getSpin()[2],  mctauplus->getSpin()[2] );
+
+      if (verboseFF) cout << "blah3" << endl;
 
     }
 
@@ -699,6 +804,8 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 
     //    static TVector3 getPolarimeter_rho ( TLorentzVector charged, TLorentzVector neutral, TLorentzVector neutrino );
     //    static TVector3 getPolarimeter_pi  ( TLorentzVector charged, TLorentzVector neutrino );
+
+    if (verboseFF) cout << "hello 0.0" << endl;
 
     if ( finalmctaus.size()==2 ) {
 
@@ -911,6 +1018,8 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 
     }
 
+    if (verboseFF) cout << "hello 0.1" << endl;
+
     // look for converted photons from pi0
     for (int j=0; j<mccol->getNumberOfElements(); j++) {
       MCParticle* mcp = dynamic_cast<MCParticle*> (mccol->getElementAt(j));
@@ -937,6 +1046,8 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 
   } catch(DataNotAvailableException &e) {};
 
+
+  if (verboseFF) cout << "hello 0.2" << endl;
 
   if ( tautauInvMass>0 ) {
     h_ttmass->Fill(tautauInvMass);
@@ -965,14 +1076,18 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 
 
 
-  bool verboseFF=false;
-
- if (verboseFF) cout << "hello 1" << endl;
+  
+  if (verboseFF) cout << "hello 1" << endl;
 
   //-----------------------------------
   // apply simple preselection for tau pair events
   //-----------------------------------
-  int nchpfo(0);
+
+
+  LCCollection* pandoraClusCol = evt->getCollection( "PandoraClusters");
+
+
+ int nchpfo(0);
   int nneupfo(0);
   try {
     LCCollection* pfocol = _useDistilled ? evt->getCollection( "DistilledPFOs" ) : evt->getCollection( "PandoraPFOs") ;
@@ -1368,6 +1483,11 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 	float seedClWidth1[2]={0,0};
 	float seedClWidth2[2]={0,0};
 	float seedClLength[2]={0,0};
+
+	//float seedClWidth1b[2]={0,0};
+	//float seedClWidth2b[2]={0,0};
+	//float seedClLengthb[2]={0,0};
+
 	float seedecaleonp[2]={0,0};
 	for (int ij=0; ij<2; ij++) {
 	  float ecalen(0);
@@ -1391,14 +1511,23 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 
 
 	  if ( maxCl ) {
-	    std::vector < float > clevals = tauUtils::getClusterEigenvalues( maxCl );
+	    std::vector < float > clevals = tauUtils::getClusterEigenvalues( maxCl,  pandoraClusCol->getParameters() );
 	    seedClWidth1[ij]=fabs( clevals[0] );
 	    seedClWidth2[ij]=fabs( clevals[1] );
 	    seedClLength[ij]=fabs( clevals[2] );
+
+	    // clevals = tauUtils::getClusterEigenvalues_DJ( maxCl );
+	    // seedClWidth1b[ij]=fabs( clevals[0] );
+	    // seedClWidth2b[ij]=fabs( clevals[1] );
+	    // seedClLengthb[ij]=fabs( clevals[2] );
 	  } else {
 	    seedClWidth1[ij]=0;
 	    seedClWidth2[ij]=0;
 	    seedClLength[ij]=0;
+
+	    //seedClWidth1b[ij]=0;
+	    //seedClWidth2b[ij]=0;
+	    //seedClLengthb[ij]=0;
 	  }
 	  
 
@@ -1443,15 +1572,19 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 	h_seedEcalEn[isample]->Fill( seedecalen[0] );
 	h_seedEcalEn[isample]->Fill( seedecalen[1] );
 
-	h_seedClusterWidth1[isample]->Fill( log10(seedClWidth1[0]) );
-	h_seedClusterWidth1[isample]->Fill( log10(seedClWidth1[1]) );
-	h_seedClusterWidth2[isample]->Fill( log10(seedClWidth2[0]) );
-	h_seedClusterWidth2[isample]->Fill( log10(seedClWidth2[1]) );
+	for (int ii=0; ii<2; ii++) {
+	  h_seedClusterWidth1[isample]->Fill( log10(seedClWidth1[ii]) );
+	  h_seedClusterWidth2[isample]->Fill( log10(seedClWidth2[ii]) );
+	  h_seedClusterWidthRatio[isample]->Fill( seedClWidth1[ii]/seedClWidth2[ii] );
+	  h_seedClusterLength[isample]->Fill( log10(seedClLength[ii]) );
+	}
 
-	
-
-	h_seedClusterLength[isample]->Fill( log10(seedClLength[0]) );
-	h_seedClusterLength[isample]->Fill( log10(seedClLength[1]) );
+//	h_seedClusterWidth1b[isample]->Fill( log10(seedClWidth1b[0]) );
+//	h_seedClusterWidth1b[isample]->Fill( log10(seedClWidth1b[1]) );
+//	h_seedClusterWidth2b[isample]->Fill( log10(seedClWidth2b[0]) );
+//	h_seedClusterWidth2b[isample]->Fill( log10(seedClWidth2b[1]) );
+//	h_seedClusterLengthb[isample]->Fill( log10(seedClLengthb[0]) );
+//	h_seedClusterLengthb[isample]->Fill( log10(seedClLengthb[1]) );
 
 	h_seedEcalEonP[isample]->Fill( seedecaleonp[0] );
 	h_seedEcalEonP[isample]->Fill( seedecaleonp[1] );
@@ -1665,7 +1798,13 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 
 	      h_dec_seed_clusterWidth1[isample][idec]->Fill( log10(seedClWidth1[j]) );
 	      h_dec_seed_clusterWidth2[isample][idec]->Fill( log10(seedClWidth2[j]) );
+	      h_dec_seed_clusterWidthRatio[isample][idec]->Fill( seedClWidth1[j]/seedClWidth2[j] );
 	      h_dec_seed_clusterLength[isample][idec]->Fill( log10(seedClLength[j]) );
+
+	      //h_dec_seed_clusterWidth1b[isample][idec]->Fill( log10(seedClWidth1b[j]) );
+	      //h_dec_seed_clusterWidth2b[isample][idec]->Fill( log10(seedClWidth2b[j]) );
+	      //h_dec_seed_clusterLengthb[isample][idec]->Fill( log10(seedClLengthb[j]) );
+
 	      h_dec_seed_energy[isample][idec]->Fill( highestPtChargedPFO[j].second->getEnergy() );
 
 	      h_dec_cone_nchpfo[isample][idec]->Fill(nch);
@@ -1863,11 +2002,11 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 	//   ( highestPtChargedPFO[1].first < 25. || seedcaloen[1]>15 ) ;
 
 	bool seedClusterCut = 
-	  seedcaloen[1] > 5. && 
-	  log10(seedClWidth2[0])>1. && log10(seedClWidth2[0])<3.6 &&
-	  log10(seedClWidth2[1])>1. && log10(seedClWidth2[1])<3.6 &&
-	  log10(seedClLength[0])>1.6 && log10(seedClLength[0])<4.0 && 
-	  log10(seedClLength[1])>1.6 && log10(seedClLength[1])<4.0 ;
+	  seedcaloen[1] > 5. &&
+	  log10(seedClWidth2[0])>2.6 && log10(seedClWidth2[0])<4.6 &&
+	  log10(seedClWidth2[1])>2.6 && log10(seedClWidth2[1])<4.6 &&
+	  log10(seedClLength[0])>3.8 && log10(seedClLength[0])<6.0 && 
+	  log10(seedClLength[1])>3.8 && log10(seedClLength[1])<6.0 ;
 
 
 	//	bool singleElectronSeedCut = seedecaleonp[0]<0.85 || seedecaleonp[1]<0.85;
@@ -2313,14 +2452,17 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 
 		for ( auto cp : coneparticlesTRIM[j] ) {
 		  if ( cp->getType()==22 && cp->getClusters().size()==1 ) {
-		    std::vector <float> evals = tauUtils::getClusterEigenvalues( cp->getClusters()[0] );
-		    h_rhoDecaySinglePhoClus_singleGammaClusterEvals->Fill(evals[0], evals[1]);
+
+		    std::vector <float> evals = tauUtils::getClusterEigenvalues( cp->getClusters()[0] ,  pandoraClusCol->getParameters() );
+
+		    h_rhoDecaySinglePhoClus_singleGammaClusterEval1->Fill(cp->getClusters()[0]->getEnergy(), evals[0]);
+		    h_rhoDecaySinglePhoClus_singleGammaClusterEval2->Fill(cp->getClusters()[0]->getEnergy(), evals[1]);
+		    h_rhoDecaySinglePhoClus_singleGammaClusterEvalRatio->Fill(cp->getClusters()[0]->getEnergy(), evals[0]/evals[1]);
 		  }
 		}
 		
 	      } else if ( ngam==1 ) {
-		  
-
+		
 		ReconstructedParticle* rpgam(0);
 		  
 		for ( auto cp : coneparticlesTRIM[j] ) {
@@ -2334,8 +2476,13 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 		std::vector <float> evals;
 		if ( nclus==1 ) {
 		  Cluster* cl = rpgam->getClusters()[0];
-		  evals = tauUtils::getClusterEigenvalues(cl);
-		  // cout << "single gam cluster: eigenvalues " << evals[0] << " " << evals[1] << " " << evals[2] << endl;
+		  evals = tauUtils::getClusterEigenvalues(cl,  pandoraClusCol->getParameters() );
+		  std::vector <float> evalsDJ=tauUtils::getClusterEigenvalues_DJ(cl);
+
+		  //cout << "single gam cluster: " << cl->getEnergy() << " " << cl->getShape() [0] << " " << cl->getShape() [1] << " " << cl->getShape() [2] << " " << cl->getShape() [3] << endl;
+		  //cout << "single gam cluster: eigenvalues   " << evals[0] << " " << evals[1] << " " << evals[2] << endl;
+		  //cout << "single gam cluster: eigenvaluesDJ " << evalsDJ[0] << " " << evalsDJ[1] << " " << evalsDJ[2] << endl;
+
 		}
 
 
@@ -2417,17 +2564,30 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 		    } else {
 		      
 		      bool merged = majorPFO[mcgamma[0]]==majorPFO[mcgamma[1]];
-		      //		      cout << " merged into pho clus ? " << merged;
-
-		    
-
+		      // cout << " merged into pho clus ? " << merged << endl;
 
 		      if ( merged ) {
 			if ( majorPFO[mcgamma[0]]->getType()==22 ) {
 			  h_rhoDecaySinglePhoClus_reason->Fill( 3 );
 			  
-			  if ( evals.size()>0 ) h_rhoDecaySinglePhoClus_mergedGammaClusterEvals->Fill(evals[0], evals[1]);
+			  if ( evals.size()>0 ) {
+			    // cout << rpgam->getClusters()[0]->getEnergy() << " " << evals[0] << " " <<  evals[1] << endl;
+			    h_rhoDecaySinglePhoClus_mergedGammaClusterEval1->Fill( rpgam->getClusters()[0]->getEnergy(), evals[0]);
+			    h_rhoDecaySinglePhoClus_mergedGammaClusterEval2->Fill( rpgam->getClusters()[0]->getEnergy(), evals[1]);
+			    h_rhoDecaySinglePhoClus_mergedGammaClusterEvalRatio->Fill( rpgam->getClusters()[0]->getEnergy(), evals[0]/evals[1]);
+			  }
 
+			  float minEn = mcgamma[0]->getEnergy();
+			  float maxEn = mcgamma[1]->getEnergy();
+			  if (minEn>maxEn) {
+			    float temp=maxEn;
+			    maxEn=minEn;
+			    minEn=temp;
+			  }
+
+			  h_rhoDecaySinglePhoClus_mergedGammaMCEns->Fill(minEn, maxEn);
+
+			  h_rhoDecaySinglePhoClus_mergedGammaMCAngle->Fill( TVector3(mcgamma[0]->getMomentum()). Angle( TVector3(mcgamma[1]->getMomentum()) ) );
 
 			  
 			} else if (  majorPFO[mcgamma[0]]->getCharge()==0 ) {
@@ -2468,7 +2628,13 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 
 		hSEL_dec_seed_clusterWidth1[isample][idec]->Fill( log10(seedClWidth1[j]) );
 		hSEL_dec_seed_clusterWidth2[isample][idec]->Fill( log10(seedClWidth2[j]) );
+		hSEL_dec_seed_clusterWidthRatio[isample][idec]->Fill( seedClWidth1[j]/seedClWidth2[j] );
 		hSEL_dec_seed_clusterLength[isample][idec]->Fill( log10(seedClLength[j]) );
+
+		//hSEL_dec_seed_clusterWidth1b[isample][idec]->Fill( log10(seedClWidth1b[j]) );
+		//hSEL_dec_seed_clusterWidth2b[isample][idec]->Fill( log10(seedClWidth2b[j]) );
+		//hSEL_dec_seed_clusterLengthb[isample][idec]->Fill( log10(seedClLengthb[j]) );
+
 		hSEL_dec_seed_energy[isample][idec]->Fill( highestPtChargedPFO[j].second->getEnergy() );
 
 		hSEL_dec_cone_nchpfo[isample][idec]->Fill(nch);
@@ -2584,12 +2750,26 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 	      hSEL_rec_rho_mcdec[isample]->Fill( matchedTauByDirDecay[j] );
 	      hSEL_rec_rho_pol[isample]->Fill( polEstimator );
 
+	      float polEstimator_cheatGam = tauUtils::getLongPolarimeterFromEn_rho( tauUtils::getTLV( highestPtChargedPFO[j].second ),  mcTauGammaVis4mom[ matchedTauByDirIndex[j] ] , 250. );
+	      hSEL_recCheatGam_rho_pol[isample]->Fill( polEstimator_cheatGam );
+
+	      if ( polEstimator_cheatGam > 1.5 ) {
+		cout << "strangely large rho pol (gam cheat ) " << polEstimator_cheatGam << " uncheated: " << polEstimator << endl;
+		mcTauGammaVis4mom[ matchedTauByDirIndex[j] ].Print();
+		trimneutraljet4mom[j].Print();
+		cout << "-------" << endl;
+	      }
+
+
 	      if (  mctauhelicity[j] > 0.5 ) {
 		hSEL_rec_rho_pol_MCpos[isample]->Fill( polEstimator );
+		hSEL_recCheatGam_rho_pol_MCpos[isample]->Fill( polEstimator_cheatGam );
 	      } else if (  mctauhelicity[j] < -0.5 ) {
 		hSEL_rec_rho_pol_MCneg[isample]->Fill( polEstimator );
+		hSEL_recCheatGam_rho_pol_MCneg[isample]->Fill( polEstimator_cheatGam );
 	      } else {
 		hSEL_rec_rho_pol_MCoth[isample]->Fill( polEstimator );
+		hSEL_recCheatGam_rho_pol_MCoth[isample]->Fill( polEstimator_cheatGam );
 	      }
 
 	      hSEL_rec_rho_coneMass[isample]->Fill( jmass  );
@@ -2602,6 +2782,7 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 		hSEL_recrho_mcrho_pol[isample]->Fill( mcapproxPolarimeter[j] , polEstimator );
 		hSEL_recrho_mcrho_dpol[isample]->Fill( dpol );
 	      }
+
 
 
 	    } else if (recoDecay[j]==tauUtils::decayA1_1p ) {
