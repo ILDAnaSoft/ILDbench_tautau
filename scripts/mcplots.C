@@ -39,7 +39,7 @@ void init() {
 
   }
 
-  ttltx.SetTextSize(0.1);
+  ttltx.SetTextSize(0.06);
 
   ttf.SetTextFont(62);
   ttf.SetTextSize(0.06);
@@ -104,6 +104,7 @@ void mcplots() {
 	ttt.DrawTextNDC(0.2, 0.94, "MC level");
 
 	cc->Print("figs/mcplot_"+pols[j]+"_"+dec+"_mcPolar"+type+".eps");
+	cc->Print("figs/mcplot_"+pols[j]+"_"+dec+"_mcPolar"+type+".C");
 	cc->Print("allMCPlots.pdf");
       }
     }
@@ -147,6 +148,7 @@ void mcplots() {
     ttt.DrawTextNDC(0.2, 0.94, "MC level");
 
     cc->Print("figs/mcplot_"+hnames1d[i]+".eps");
+    cc->Print("figs/mcplot_"+hnames1d[i]+".C");
     cc->Print("allMCPlots.pdf");
   }
 
@@ -309,6 +311,7 @@ void getDecayModeEff() {
 
   }
   cc->Print("figs/mcplot_decay.eps");
+  cc->Print("figs/mcplot_decay.C");
 
   float geff[2][3];
   float gdeff[2][3];
@@ -369,12 +372,15 @@ void getDecayModeEff() {
 
   ttltx.DrawLatexNDC(0.82, 0.64, "#pi");
   ttltx.DrawLatexNDC(0.58, 0.78, "#rho");
-  ttltx.DrawLatexNDC(0.35, 0.3 , "a_{1}");
+  ttltx.DrawLatexNDC(0.33, 0.3 , "a_{1}");
 
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
+  ttltx.DrawLatexNDC(0.55, 0.35, "e^{+}e^{#minus} #rightarrow #tau^{+}#tau^{#minus}");
+  ttltx.DrawLatexNDC(0.55, 0.25, "#sqrt{s} = 500 GeV");
 
 
   cc->Print("figs/decmodeEffPur.eps");
+  cc->Print("figs/decmodeEffPur.C");
 
 
 
@@ -399,8 +405,11 @@ void getDecayModeEff() {
   tl->Draw();
 
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
+  ttltx.DrawLatexNDC(0.22, 0.35, "e^{+}e^{#minus} #rightarrow #tau^{+}#tau^{#minus}");
+  ttltx.DrawLatexNDC(0.22, 0.25, "#sqrt{s} = 500 GeV");
 
   cc->Print("figs/decmodeEffTimesPur.eps");
+  cc->Print("figs/decmodeEffTimesPur.C");
 
 
 
@@ -433,6 +442,7 @@ void getDecayModeEff() {
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
   cc->Print("figs/dPolRho.eps");
+  cc->Print("figs/dPolRho.C");
 
 
   for (int idet=0; idet<2; idet++) {// large/small
@@ -457,6 +467,7 @@ void getDecayModeEff() {
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
   cc->Print("figs/dPolPi.eps");
+  cc->Print("figs/dPolPi.C");
 
 
   for (int idet=0; idet<2; idet++) {// large/small
@@ -468,7 +479,7 @@ void getDecayModeEff() {
       hpold[idet][j]->SetLineStyle( ltype_size[idet] );
       hpold[idet][j]->SetMarkerColor( color_size[idet] );
       hpold[idet][j]->SetMarkerStyle( ptype_size[idet] );
-      hpold[idet][j]->Rebin(4);
+      hpold[idet][j]->Rebin(5);
     }
   }
 
@@ -484,6 +495,7 @@ void getDecayModeEff() {
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
   cc->Print("figs/PolRho.eps");
+  cc->Print("figs/PolRho.C");
 
   for (int idet=0; idet<2; idet++) {// large/small
     for (int j=0; j<2; j++) {
@@ -510,6 +522,7 @@ void getDecayModeEff() {
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
   cc->Print("figs/PolPi.eps");
+  cc->Print("figs/PolPi.C");
 
 
 
@@ -522,7 +535,7 @@ void getDecayModeEff() {
       hpold[idet][j]->SetLineStyle( ltype_size[idet] );
       hpold[idet][j]->SetMarkerColor( color_size[idet] );
       hpold[idet][j]->SetMarkerStyle( ptype_size[idet] );
-      hpold[idet][j]->Rebin(4);
+      hpold[idet][j]->Rebin(5);
     }
   }
 
@@ -538,6 +551,7 @@ void getDecayModeEff() {
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
   cc->Print("figs/PolRhoMC.eps");
+  cc->Print("figs/PolRhoMC.C");
 
   for (int idet=0; idet<2; idet++) {// large/small
     for (int j=0; j<2; j++) {
@@ -564,6 +578,7 @@ void getDecayModeEff() {
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
   cc->Print("figs/PolPiMC.eps");
+  cc->Print("figs/PolPiMC.C");
 
 
 //  for (int j=0; j<2; j++) {
@@ -589,7 +604,8 @@ void simpleLargeSmallPlots() {
   hnames1d.push_back("sample0__RHO_cone_visMass");
   hnames1d.push_back("sample0__A1P_cone_visMass");
   hnames1d.push_back("sample0__RHO_SELcone_visEnergyDiff");
-  hnames1d.push_back("sample0__RHO_SELcone_neutralvisEnergyDiff");
+  hnames1d.push_back("sample0__A1P_SELcone_visEnergyDiff");
+  //  hnames1d.push_back("sample0__RHO_SELcone_neutralvisEnergyDiff");
 
   std::map < TString, TString > xaxtitle;
   xaxtitle["sample0__PI_cone_ngammapfo"]="# reconstructed photons";
@@ -598,7 +614,8 @@ void simpleLargeSmallPlots() {
   xaxtitle["sample0__RHO_cone_visMass"]="visible mass [GeV/c^{2}]";
   xaxtitle["sample0__A1P_cone_visMass"]="visible mass [GeV/c^{2}]";
   xaxtitle["sample0__RHO_SELcone_visEnergyDiff"]="en. diff. (rec-true) [GeV]";
-  xaxtitle["sample0__RHO_SELcone_neutralvisEnergyDiff"]="neutral en. diff. (rec-true) [GeV]";
+  xaxtitle["sample0__A1P_SELcone_visEnergyDiff"]="en. diff. (rec-true) [GeV]";
+  //  xaxtitle["sample0__RHO_SELcone_neutralvisEnergyDiff"]="neutral en. diff. (rec-true) [GeV]";
 
   std::map < TString, int > linlog;
   linlog["sample0__PI_cone_ngammapfo"]               =0;
@@ -606,8 +623,19 @@ void simpleLargeSmallPlots() {
   linlog["sample0__A1P_cone_ngammapfo"]              =0;
   linlog["sample0__RHO_cone_visMass"]                =0;
   linlog["sample0__A1P_cone_visMass"]                =0;
-  linlog["sample0__RHO_SELcone_visEnergyDiff"]       =1;
-  linlog["sample0__RHO_SELcone_neutralvisEnergyDiff"]=1;
+  linlog["sample0__RHO_SELcone_visEnergyDiff"]       =0;
+  linlog["sample0__A1P_SELcone_visEnergyDiff"]       =0;
+  //  linlog["sample0__RHO_SELcone_neutralvisEnergyDiff"]=0;
+
+  std::map < TString, int > rebin;
+  rebin["sample0__PI_cone_ngammapfo"]               =1;
+  rebin["sample0__RHO_cone_ngammapfo"]              =1;
+  rebin["sample0__A1P_cone_ngammapfo"]              =1;
+  rebin["sample0__RHO_cone_visMass"]                =1;
+  rebin["sample0__A1P_cone_visMass"]                =1;
+  rebin["sample0__RHO_SELcone_visEnergyDiff"]       =2;
+  rebin["sample0__A1P_SELcone_visEnergyDiff"]       =4;
+  //  rebin["sample0__RHO_SELcone_neutralvisEnergyDiff"]=2;
 
   std::map < TString, float > hmaxX;
   hmaxX["sample0__PI_cone_gammaen"]=20.;
@@ -630,8 +658,13 @@ void simpleLargeSmallPlots() {
     float maxx=-1000;
     if ( hmaxX.find( hnames1d[i] ) != hmaxX.end() ) maxx = hmaxX[hnames1d[i]];
 
+    int ireb = rebin.find(  hnames1d[i] ) != rebin.end() ? rebin[hnames1d[i]]: 1;
+
+
     for (int j=0; j<2; j++) {
       h[j] = (TH1F*) fin[j][0]->Get(hnames1d[i]);
+      
+      if (ireb>1) h[j] ->Rebin(ireb);
 
       if ( maxx>-999 ) {
 	h[j]->GetXaxis()->SetRangeUser( h[j]->GetXaxis()->GetBinLowEdge(1), maxx );
@@ -676,6 +709,7 @@ void simpleLargeSmallPlots() {
 
 
     cc->Print("figs/compareplot_"+hnames1d[i]+".eps");
+    cc->Print("figs/compareplot_"+hnames1d[i]+".C");
     cc->Print("allSimpleLargeSmallPlots.pdf");
   }
 
@@ -691,6 +725,7 @@ void simpleLargeSmallPlots() {
 
 
   cc->Print("figs/neutralHadPFOs.eps");
+  cc->Print("figs/neutralHadPFOs.C");
   cc->Print("allSimpleLargeSmallPlots.pdf");
 
   TH1F* jj = (TH1F*) fin[0][0]->Get("rhoDecaySinglePhoClus_reason");
@@ -698,23 +733,91 @@ void simpleLargeSmallPlots() {
   jj->Draw();
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
   cc->Print("figs/onlyOneClusReason.eps");
+  cc->Print("figs/onlyOneClusReason.C");
   cc->Print("allSimpleLargeSmallPlots.pdf");
 
-  jj = (TH1F*) fin[0][0]->Get("neutronClus_eOnP_beforeAfter");
-  if ( jj ) {
-    jj->GetXaxis()->SetRangeUser(0,2);
-    jj->GetYaxis()->SetRangeUser(0,5);
-    jj->SetTitle("");
-    jj->GetXaxis()->SetTitle("E/p [orig]");
-    jj->GetYaxis()->SetTitle("E/p [merged]");
-    jj->Draw("box");
-    ttf.DrawTextNDC(0.5, 0.95, ILDlab);
-    cc->Print("figs/EonPmergingNHAD.eps");
-    cc->Print("allSimpleLargeSmallPlots.pdf");
-  }
+  TH2F* jj2 = (TH2F*) fin[0][0]->Get("neutronClus_eOnP_beforeAfter");
+  jj2->SetTitle("");
+  jj2->GetXaxis()->SetTitle("E/p [orig]");
+  jj2->GetYaxis()->SetTitle("E/p [merged]");
+  jj2->Draw("box");
+  ttf.DrawTextNDC(0.5, 0.95, ILDlab);
+  cc->Print("figs/EonPmergingNHAD.eps");
+  cc->Print("figs/EonPmergingNHAD.C");
+  cc->Print("allSimpleLargeSmallPlots.pdf");
+
+  cc->Clear();
+  cc->SetLogy();
+  TH1D* l1 = jj2->ProjectionX();
+  TH1D* l2 = jj2->ProjectionY();
+
+  TLegend ddl(0.4, 0.7, 0.8, 0.9);
+  ddl.AddEntry(l1, "original", "l");
+  ddl.AddEntry(l2, "with neutral cluster", "l");
+
+  l1->GetXaxis()->SetTitle("E/p");
+  
+  l1->Draw();
+  l2->SetLineColor(2);
+  l2->Draw("same");
+  ttf.DrawTextNDC(0.5, 0.95, ILDlab);
+
+  ddl.Draw();
+
+  cc->Print("figs/EonPmergingNHAD_1d.eps");
+  cc->Print("figs/EonPmergingNHAD_1d.C");
+  cc->Print("allSimpleLargeSmallPlots.pdf");
+  cc->SetLogy(0);
 
 
   TH2F* jjk[2][4];
+  cc->Clear();
+  jjk[0][0] = (TH2F*) fin[0][0]->Get("rhoDecaySinglePhoClus_mergedGammaClusterEval1");
+  jjk[0][1] = (TH2F*) fin[0][0]->Get("rhoDecaySinglePhoClus_mergedGammaClusterEval2");
+  jjk[0][2] = (TH2F*) fin[0][0]->Get("rhoDecaySinglePhoClus_mergedGammaClusterEvalRatio");
+
+  jjk[1][0] = (TH2F*) fin[0][0]->Get("rhoDecaySinglePhoClus_singleGammaClusterEval1");
+  jjk[1][1] = (TH2F*) fin[0][0]->Get("rhoDecaySinglePhoClus_singleGammaClusterEval2");
+  jjk[1][2] = (TH2F*) fin[0][0]->Get("rhoDecaySinglePhoClus_singleGammaClusterEvalRatio");
+
+  for (int j=0; j<3; j++) {
+    jjk[0][j]->SetLineColor(2);
+
+    jjk[0][j]->SetTitle("");
+    jjk[0][j]->GetXaxis()->SetTitle("cluster energy [GeV]");
+
+    jjk[0][j]->Rebin2D(2,2);
+    jjk[1][j]->Rebin2D(2,2);
+
+    jjk[0][j]->Draw("box");
+    jjk[1][j]->Draw("box;same");
+
+    ttt.SetTextColor(2);
+    ttt.DrawTextNDC(0.65, 0.2, "merged");
+
+    ttt.SetTextColor(1);
+    ttt.DrawTextNDC(0.4, 0.2, "single");
+
+
+    if ( j==0 ) {
+      jjk[0][j]->GetYaxis()->SetTitle("1st cluster e-val [mm]");
+      cc->Print("figs/eval1.eps");
+      cc->Print("figs/eval1.C");
+    } else if ( j==1 ) {
+      jjk[0][j]->GetYaxis()->SetTitle("2nd cluster e-val [mm]");
+      cc->Print("figs/eval2.eps");
+      cc->Print("figs/eval2.C");
+    } else if ( j==2 ) {
+      jjk[0][j]->GetYaxis()->SetTitle("1st/2nd cluster e-val ratio");
+      cc->Print("figs/evalRatio.eps");
+      cc->Print("figs/evalRatio.C");
+    }
+
+
+
+    cc->Print("allSimpleLargeSmallPlots.pdf");
+  }
+
 
   for ( int j=0; j<4; j++) {
     for (int i=0; i<2; i++) {
@@ -761,42 +864,136 @@ void simpleLargeSmallPlots() {
     cc->Print("allSimpleLargeSmallPlots.pdf");
   }
 
-  for ( int idet=0; idet<2; idet++) {
-    for (int ipol=0; ipol<2; ipol++) {
+  TH1F* hEff[2][2];
 
-      for (int itdec=0; itdec<2; itdec++) {
+  for (int itdec=0; itdec<2; itdec++) {
 
-	TString dd = itdec==0 ? "pi" : "rho";
+    TString dd = itdec==0 ? "pi" : "rho";
+
+    for ( int idet=0; idet<2; idet++) {
 
 
-	TH1F* h1 = (TH1F*) fin[idet][ipol] -> Get("sample0_"+dd+"_mcPolarExact");
-	TH1F* h2 = (TH1F*) fin[idet][ipol] -> Get("sample0_"+dd+"_mcPolarExact_helNeg");
-	TH1F* h3 = (TH1F*) fin[idet][ipol] -> Get("sample0_"+dd+"_mcPolarExact_helPos");
-	TH1F* h4 = (TH1F*) fin[idet][ipol] -> Get("sample0_SEL_"+dd+"_mcPolarExact_helNeg");
-	TH1F* h5 = (TH1F*) fin[idet][ipol] -> Get("sample0_SEL_"+dd+"_mcPolarExact_helPos");
+      TH1F* heff[2];
 
-	h2->Add(h3);
-	h4->Add(h5);
+      for (int ipol=0; ipol<2; ipol++) {
 
-	cc->Clear();
-	h1->Draw("e");
-	h2->SetLineColor(4);
-	h2->Draw("same");
-	h4->SetLineColor(6);
-	h4->Draw("same");
-	cc->Print("allSimpleLargeSmallPlots.pdf");
+	if ( ipol==0 ) {
+	  heff[0]=(TH1F*) fin[idet][ipol] -> Get("sample0_SEL_"+dd+"_mcPolarExact_helNeg");
+	  heff[0]->Add( (TH1F*) fin[idet][ipol] -> Get("sample0_SEL_"+dd+"_mcPolarExact_helPos") ); 
 
-	TH1F* aa = (TH1F*) h4->Clone("eff");
-	aa->Sumw2();
-	aa->Divide(h4,h2, 1, 1, "B");
+	  heff[1]=(TH1F*) fin[idet][ipol] -> Get("sample0_"+dd+"_mcPolarExact");
+	} else {
+	  heff[0]->Add((TH1F*) fin[idet][ipol] -> Get("sample0_SEL_"+dd+"_mcPolarExact_helNeg") );
+	  heff[0]->Add( (TH1F*) fin[idet][ipol] -> Get("sample0_SEL_"+dd+"_mcPolarExact_helPos") ); 
 
-	aa->Draw("e");
-	aa->Fit("pol1");
-	cc->Print("allSimpleLargeSmallPlots.pdf");
+	  heff[1]->Add((TH1F*) fin[idet][ipol] -> Get("sample0_"+dd+"_mcPolarExact"));
+	}
 
       }
+
+      heff[0]->Rebin(5);
+      heff[1]->Rebin(5);
+
+      //cc->Clear();
+      //heff[0]->SetLineColor(4);
+      //heff[1]->Draw();
+      //heff[0]->Draw("same");
+      //
+      //cc->Print("allSimpleLargeSmallPlots.pdf");
+
+      hEff[idet][itdec] = (TH1F*) heff[0]->Clone("eff");
+      hEff[idet][itdec]->Sumw2();
+      hEff[idet][itdec]->SetLineColor( color_size[idet] );
+      hEff[idet][itdec]->SetMarkerColor( color_size[idet] );
+      hEff[idet][itdec]->SetLineStyle( ltype_size[idet] );
+
+      hEff[idet][itdec]->Divide(heff[0],heff[1], 1, 1, "B");
+
+      // hEff[idet][itdec]->Draw("e");
+      //      hEff[idet][itdec]->Fit("pol1");
+      //cc->Print("allSimpleLargeSmallPlots.pdf");
+
     }
+
   }
+
+  cc->Clear();
+  cc->Divide(1,2);
+  for (int itdec=0; itdec<2; itdec++) {
+    cc->cd(itdec+1);
+
+    hEff[0][itdec]->SetTitle("");
+    hEff[0][itdec]->GetYaxis()->SetRangeUser(0.25, 0.75);
+
+    hEff[0][itdec]->GetXaxis()->SetTitle("exact polarimeter (MC)");
+    hEff[0][itdec]->GetYaxis()->SetTitle("selection efficiency");
+
+    hEff[0][itdec]->Draw("e");
+    hEff[1][itdec]->Draw("same;e");
+
+    ttltx.SetTextSize(0.12);
+    if ( itdec==0 ) {
+      ttltx.DrawLatexNDC(0.45, 0.42, "#tau #rightarrow #pi");
+    } else if (  itdec==1 ) {
+      ttltx.DrawLatexNDC(0.45, 0.42, "#tau #rightarrow #rho");
+    }
+
+    tl->SetX1NDC(0.7);
+    tl->SetX2NDC(0.9);
+    tl->SetY1NDC(0.2);
+    tl->SetY2NDC(0.4);
+    tl->Draw();
+
+    ttf.DrawTextNDC(0.7, 0.95, ILDlab);
+
+  }
+  cc->Print("figs/selectionEffsPols.eps");
+  cc->Print("figs/selectionEffsPols.C");
+
+  cc->Print("allSimpleLargeSmallPlots.pdf");
+
+
+//  TH2F* hcl[2][2];
+//  for ( int idet=0; idet<2; idet++) {
+//    for (int ipol=0; ipol<2; ipol++) {
+//
+//      TH2F* h0=(TH2F*) fin[idet][ipol] -> Get("rhoDecaySinglePhoClus_mergedGammaClusterEvals");
+//      TH2F* h1=(TH2F*) fin[idet][ipol] -> Get("rhoDecaySinglePhoClus_singleGammaClusterEvals");
+//
+//      cout <<  hcl[idet][0] << " " <<  hcl[idet][1] << " " << h0 << " " << h1 << endl;
+//
+//      if (ipol==0) {
+//	hcl[idet][0]=h0;
+//	hcl[idet][1]=h1;
+//      } else {
+//	hcl[idet][0]->Add(h0);
+//	hcl[idet][1]->Add(h1);
+//      }
+//
+//      hcl[idet][0]->SetLineColor(2);
+//
+//    }
+//
+//  }
+
+//  cc->Clear();
+//  cc->Divide(2,2);
+//  int ic=1;
+//  for ( int idet=0; idet<2; idet++) {
+//
+//    for (int i=0; i<2; i++) hcl[idet][i]->Scale(1./ hcl[idet][i]->GetEntries());
+//
+//    cc->cd(ic++);
+//    hcl[idet][0]->ProjectionX()->Draw("hist");
+//    hcl[idet][1]->ProjectionX()->Draw("same;hist");
+//
+//    cc->cd(ic++);
+//    hcl[idet][0]->ProjectionY()->Draw("hist");
+//    hcl[idet][1]->ProjectionY()->Draw("hist;same");
+//
+//
+//  }
+//  cc->Print("allSimpleLargeSmallPlots.pdf");
 
   cc->Print("allSimpleLargeSmallPlots.pdf]");
 

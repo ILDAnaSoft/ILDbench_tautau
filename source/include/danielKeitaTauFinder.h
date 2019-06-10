@@ -87,14 +87,23 @@ class danielKeitaTauFinderProcessor : public Processor {
 
   TH2F* h_neutralHadronPFO_mainMCcontrib_pdgEn;
   TH1F* h_rhoDecaySinglePhoClus_reason;
-  TH2F* h_rhoDecaySinglePhoClus_mergedGammaClusterEvals;
-  TH2F* h_rhoDecaySinglePhoClus_singleGammaClusterEvals;
+  TH2F* h_rhoDecaySinglePhoClus_mergedGammaClusterEval1;
+  TH2F* h_rhoDecaySinglePhoClus_singleGammaClusterEval1;
+  TH2F* h_rhoDecaySinglePhoClus_mergedGammaClusterEval2;
+  TH2F* h_rhoDecaySinglePhoClus_singleGammaClusterEval2;
+  TH2F* h_rhoDecaySinglePhoClus_mergedGammaClusterEvalRatio;
+  TH2F* h_rhoDecaySinglePhoClus_singleGammaClusterEvalRatio;
+  TH2F* h_rhoDecaySinglePhoClus_mergedGammaMCEns;
+  TH1F* h_rhoDecaySinglePhoClus_mergedGammaMCAngle;
 
-  enum {NCLASS=7, NDEC=8};
+  enum {NCLASS=10, NDEC=8};
 
   std::string classLabels[NCLASS];
 
   TH2F* h_mctautau_ecom_tauMinusCosth;
+  TH2F* h_mctautau_ecom_tauMinusHel;
+  
+  TH2F* h_mctautau_tauMinusCosth_tauMinusHel[NCLASS];
 
   TH2F* h_pirho_tauMinusCosth_mcPolarExact[NCLASS];
   TH2F* h_pirho_mcPolarExactPlusMinus[NCLASS];
@@ -224,12 +233,24 @@ class danielKeitaTauFinderProcessor : public Processor {
 
   TH1F* h_dec_seed_clusterWidth1[NCLASS][NDEC];
   TH1F* h_dec_seed_clusterWidth2[NCLASS][NDEC];
+  TH1F* h_dec_seed_clusterWidthRatio[NCLASS][NDEC];
   TH1F* h_dec_seed_clusterLength[NCLASS][NDEC];
+
+//  TH1F* h_dec_seed_clusterWidth1b[NCLASS][NDEC];
+//  TH1F* h_dec_seed_clusterWidth2b[NCLASS][NDEC];
+//  TH1F* h_dec_seed_clusterLengthb[NCLASS][NDEC];
+
   TH1F* h_dec_seed_energy[NCLASS][NDEC];
 
   TH1F* hSEL_dec_seed_clusterWidth1[NCLASS][NDEC];
   TH1F* hSEL_dec_seed_clusterWidth2[NCLASS][NDEC];
+  TH1F* hSEL_dec_seed_clusterWidthRatio[NCLASS][NDEC];
   TH1F* hSEL_dec_seed_clusterLength[NCLASS][NDEC];
+
+//  TH1F* hSEL_dec_seed_clusterWidth1b[NCLASS][NDEC];
+//  TH1F* hSEL_dec_seed_clusterWidth2b[NCLASS][NDEC];
+//  TH1F* hSEL_dec_seed_clusterLengthb[NCLASS][NDEC];
+
   TH1F* hSEL_dec_seed_energy[NCLASS][NDEC];
 
   TH1F* h_dec_cone_visMass[NCLASS][NDEC];
@@ -327,7 +348,12 @@ class danielKeitaTauFinderProcessor : public Processor {
 
   TH1F* h_seedClusterWidth1[NCLASS];
   TH1F* h_seedClusterWidth2[NCLASS];
+  TH1F* h_seedClusterWidthRatio[NCLASS];
   TH1F* h_seedClusterLength[NCLASS];
+
+  //TH1F* h_seedClusterWidth1b[NCLASS];
+  //TH1F* h_seedClusterWidth2b[NCLASS];
+  //TH1F* h_seedClusterLengthb[NCLASS];
 
   TH1F* h_seedEcalEn[NCLASS];
   TH1F* h_seedEcalEonP[NCLASS];
@@ -368,6 +394,11 @@ class danielKeitaTauFinderProcessor : public Processor {
   TH1F* hSEL_rec_rho_pol_MCneg[NCLASS];
   TH1F* hSEL_rec_rho_pol_MCoth[NCLASS];
   TH1F* hSEL_rec_rho_coneMass[NCLASS];
+
+  TH1F* hSEL_recCheatGam_rho_pol[NCLASS];
+  TH1F* hSEL_recCheatGam_rho_pol_MCpos[NCLASS];
+  TH1F* hSEL_recCheatGam_rho_pol_MCneg[NCLASS];
+  TH1F* hSEL_recCheatGam_rho_pol_MCoth[NCLASS];
 
   TH1F* hSEL_rec_a1p_mcdec[NCLASS];
   TH1F* hSEL_rec_a1p_pol  [NCLASS];

@@ -10,6 +10,7 @@
 #include "EVENT/ReconstructedParticle.h"
 #include "EVENT/Cluster.h"
 #include "EVENT/LCCollection.h"
+#include <EVENT/LCParameters.h> 
 
 #include "UTIL/PIDHandler.h"
 
@@ -40,10 +41,12 @@ class tauUtils {
   static TLorentzVector getPolarimeterTLV_rho ( TLorentzVector charged, TLorentzVector neutral, TLorentzVector neutrino );
   static TLorentzVector getPolarimeterTLV_pi  ( TLorentzVector charged, TLorentzVector neutrino );
 
-  static TLorentzVector getVisibleTau4mom( EVENT::MCParticle* rp , bool onlyNeutral=false );
-  static TLorentzVector getVisibleNeutralTau4mom( EVENT::MCParticle* rp ) {return getVisibleTau4mom(rp, true);}
+  static TLorentzVector getVisibleTau4mom( EVENT::MCParticle* rp , int subset=0 ); // bool onlyNeutral=false );
+  static TLorentzVector getVisibleNeutralTau4mom( EVENT::MCParticle* rp ) {return getVisibleTau4mom(rp, 1);}
+  static TLorentzVector getVisibleGammaTau4mom( EVENT::MCParticle* rp ) {return getVisibleTau4mom(rp, 2);}
 
-  static std::vector < float > getClusterEigenvalues( const EVENT::Cluster* cl );
+  static std::vector < float > getClusterEigenvalues( const EVENT::Cluster* cl , const  EVENT::LCParameters& colParams);
+  static std::vector < float > getClusterEigenvalues_DJ( const EVENT::Cluster* cl );
 
   static float getPhiStar ( TLorentzVector tau0, TVector3 pol0, TVector3 pol1 );
 

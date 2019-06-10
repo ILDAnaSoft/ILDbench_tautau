@@ -1,28 +1,62 @@
 import os
 import subprocess
 import ROOT
+import sys
 
 ROOT.gErrorIgnoreLevel=ROOT.kWarning # to remove printing pdf page message
 
+
+saveFitHistos=False
+plotHistos=True
+
+
+narg=len(sys.argv)
+
+if narg!=3 and narg!=4:
+    print "makeTable.py L/S LR/RL/LL/RR [-b]"
+    sys.exit()
+
+model=''
+if sys.argv[1]=="L":
+    model='ILD_l5_o1_v02_'
+elif sys.argv[1]=="S":
+    model='ILD_s5_o1_v02_'
+else:
+    print "models must be L or S"
+    sys.exit()
+    
+pol=''
+if sys.argv[2]=="LR":
+    pol='eL80pR30'
+elif sys.argv[2]=="RL":
+    pol='eR80pL30'
+elif sys.argv[2]=="LL":
+    pol='eL80pL30'
+elif sys.argv[2]=="RR":
+    pol='eR80pR30'
+elif sys.argv[2]=="U":
+    pol='unpol'
+else:
+    print "polmust be LR RL LL RR or U"
+    sys.exit()
+
+
 allfiles=os.listdir('./')
 
-# model='ILD_l5_o1_v02_'
-model='ILD_s5_o1_v02_'
 setuplab='tauFind_ALLEVT_'+model
-# setuplab='tauFind_'+model
-
 prelab='results_'+setuplab
 
-# pol='unpol'
-pol='eL80pR30'
-# pol='eR80pL30'
-# pol='eL80pL30'
-# pol='eR80pR30'
+outputLab = model + pol
 
+resultsfile=open('resultsTable_'+outputLab+'.txt','w')
 
 print '**********************************************'
-print model
+print model, outputLab
 print '**********************************************'
+
+print >> resultsfile, '**********************************************'
+print >> resultsfile, model, outputLab
+print >> resultsfile, '**********************************************'
 
 logs=[]
 for ff in allfiles:
@@ -35,9 +69,6 @@ for ff in allfiles:
 logs.sort()
 
 #--------------------------
-
-saveFitHistos=True
-plotHistos=True
 
 if plotHistos or saveFitHistos:
     figdir='./figs/'+model+pol+'/'
@@ -105,18 +136,19 @@ if posPol>0:
     wt_pL=wt_pR
     wt_pR=temp
 
-print '**********************************************'
-print '    elePol=', elePol, 'posPol=', posPol, 'lumi=', lumi
-print '**********************************************'
+print >> resultsfile, '**********************************************'
+print >> resultsfile, '    elePol=', elePol, 'posPol=', posPol, 'lumi=', lumi
+print >> resultsfile, '**********************************************'
 
-print '%50s' % 'process',
-print '%10s' % 'XSEC',
-print '%10s' % 'nMCorig',
-print '%10s' % 'nMCsel',
-print '%10s' % 'nExpect(k)'
+print >> resultsfile, '%50s' % 'process',
+print >> resultsfile, '%10s' % 'XSEC',
+print >> resultsfile, '%10s' % 'nMCorig',
+print >> resultsfile, '%10s' % 'nMCsel',
+print >> resultsfile, '%10s' % 'nExpect(k)'
 
-
-nclass=7
+# update to classes
+# nclass=7
+nclass=10
 
 totalSignal=0
 totalBackground_tt=0
@@ -142,11 +174,13 @@ ngroupOrigProc={}
 #ngroupOrigProc['bg2f']={}
 #ngroupOrigProc['bg4f']={}
 #ngroupOrigProc['bgoth']={}
-procgroupnames=['signal', 'bg2f', 'bg4f'] # , 'bgoth']
+procgroupnames=['2f_Z_lep', 'bg2f', 'bg4f'] # , 'bgoth']
 
 subclassnames=[]
 
 for logfilename in logs:
+
+    # print logfilename
 
     signal = '2f_Z_leptonic' in logfilename
 
@@ -214,6 +248,9 @@ for logfilename in logs:
             if lab=='_nOrig':
                 nsplitsplitsel['nMC']=[]
                 for i in range(nclass):
+
+                    # print i, ff[i+1]
+
                     nsplitsplitsel['nMC'].append( int(ff[i+1]) )
                     norig=norig+int(ff[i+1])
                 procweight[pname]=lumi*polxsec/norig
@@ -233,124 +270,172 @@ for logfilename in logs:
             for i in range(len( nsplitsplitsel[cut] ) ):
                 ngroupOrigProc[procgroup][cut][i]=ngroupOrigProc[procgroup][cut][i]+nsplitsplitsel[cut][i]
     
-# print ngroupOrigProc.keys()
-# for proc in ngroupOrigProc.keys():
-#     print proc, ngroupOrigProc[proc]
 
-
-print '\n \n'
-print 'COMPLETE TABLE'
-print '%20s' % (''),
+print >> resultsfile, '\n \n'
+print >> resultsfile, 'COMPLETE TABLE'
+print >> resultsfile, '%20s' % (''),
 for pgn in procgroupnames:
-    print '%25s' % '',
-    print '%24s' % pgn,
-    print '%25s' % '',
-    print ' : ',
-print ''
+    print >> resultsfile, '%39s' % '',
+    print >> resultsfile, '%30s' % pgn,
+    print >> resultsfile, '%38s' % '',
+    print >> resultsfile, ' : ',
+print >> resultsfile, ''
 
-print '%20s' % (''),
+
+
+print >> resultsfile, '%20s' % (''),
 for i in range(len(procgroupnames)):
     for subn in subclassnames:
-        print '%10s' % subn,
-    print ' : ',
-print ''
+        print >> resultsfile, '%10s' % subn,
+    print >> resultsfile, ' : ',
+print >> resultsfile, ''
 
 for cut in cutnames:
-    print '%20s' % (cut),
+    print >> resultsfile, '%20s' % (cut),
     for proc in procgroupnames:
         for i in range(nclass):
-            print '%10d' % ngroupOrigProc[proc][cut][i],
-        print ' : ',
-    print ''
+            print >> resultsfile, '%10d' % ngroupOrigProc[proc][cut][i],
+        print >> resultsfile, ' : ',
+    print >> resultsfile, ''
 
+sigGroupTable={}
+sigGroupTable[0]=[0]
+sigGroupTable[1]=[1]
+sigGroupTable[2]=[2]
+sigGroupTable[3]=[3]
+sigGroupTable[4]=[4]
+sigGroupTable[5]=[5]
+sigGroupTable[6]=[6]
+sigGroupTable[7]=[7,8,9]
+sigGroupNames={}
+for jj in range(7):
+    sigGroupNames[jj]=subclassnames[jj]
+sigGroupNames[7]='OTHER'
 
-print '\n \n'
-print 'REDUCED TABLE'
-print '%20s' % (''),
-print '%33s' % procgroupnames[0],
-print '%20s' % (''),
-print ' : ',
-print '%24s' % procgroupnames[1],
-print '%18s' % (''),
-print ' : ',
-print '%24s' % procgroupnames[2]
-print ''
-print '%20s' % (''),
-print '%10s' % subclassnames[0],
-print '%10s' % subclassnames[1],
-print '%10s' % subclassnames[2],
-print '%10s' % subclassnames[3],
-print '%10s' % 'OTHER',
+bgGroupTable={}
+bgGroupTable[0]=[7]
+bgGroupTable[1]=[8]
+bgGroupTable[2]=[0,1,2,3,4,5,6]
+bgGroupTable[3]=[9]
+
+bgGroupNames={}
+bgGroupNames[0]='0-TAU'
+bgGroupNames[1]='1-TAU'
+bgGroupNames[2]='2-TAU'
+bgGroupNames[3]='>2-TAU'
+
+print >> resultsfile, '\n \n'
+print >> resultsfile, 'REDUCED TABLE'
+print >> resultsfile, '%47s' % (''),
+print >> resultsfile, '%30s' % procgroupnames[0],
+print >> resultsfile, '%29s' % (''),
+print >> resultsfile, ' : ',
+print >> resultsfile, '%24s' % procgroupnames[1],
+print >> resultsfile, '%18s' % (''),
+print >> resultsfile, ' : ',
+print >> resultsfile, '%24s' % procgroupnames[2]
+print >> resultsfile, ''
+print >> resultsfile, '%20s' % (''),
+
+for jj in range(len(sigGroupNames)):
+    print >> resultsfile, '%10s' % sigGroupNames[jj],
+
 for i in range(2):
-    print ' : ',
-    print '%10s' % '0-TAU',
-    print '%10s' % '1-TAU',
-    print '%10s' % '2-TAU',
-    print '%10s' % '>2-TAU',
-print ''
-print ''
+    print >> resultsfile, ' : ',
+    for jj in range(len(bgGroupNames)):
+        print >> resultsfile, '%10s' % bgGroupNames[jj],
+print >> resultsfile, ''
+print >> resultsfile, ''
 
 for cut in cutnames:
-    print '%20s' % (cut),
+    print >> resultsfile, '%20s' % (cut),
     for proc in procgroupnames:
         thissplit=[]
-        if proc=='signal':
-            thissplit.append( ngroupOrigProc[proc][cut][0] )
-            thissplit.append( ngroupOrigProc[proc][cut][1] )
-            thissplit.append( ngroupOrigProc[proc][cut][2] )
-            thissplit.append( ngroupOrigProc[proc][cut][3] )
-            thissplit.append( ngroupOrigProc[proc][cut][4]+ngroupOrigProc[proc][cut][5]+ngroupOrigProc[proc][cut][6] )
+        if proc=='2f_Z_lep':
+            for jj in range( len(sigGroupTable) ):
+                tot=0.
+                ssp = sigGroupTable[jj]
+                #print jj, ' : ',ssp, 
+                for sspp in ssp:
+                    #print sspp, ',',ngroupOrigProc[proc][cut][sspp]
+                    tot=tot+ngroupOrigProc[proc][cut][sspp]
+                print >> resultsfile, '%10d' % tot,
         else:
-            thissplit.append( ngroupOrigProc[proc][cut][4] )
-            thissplit.append( ngroupOrigProc[proc][cut][5] )
-            thissplit.append( ngroupOrigProc[proc][cut][0]+ngroupOrigProc[proc][cut][1]+ngroupOrigProc[proc][cut][2]+ngroupOrigProc[proc][cut][3] )
-            thissplit.append( ngroupOrigProc[proc][cut][6] )
+            for jj in range( len(bgGroupTable) ):
+                tot=0.
+                bp = bgGroupTable[jj]
+                #print jj, ' : ',ssp, 
+                for bpp in bp:
+                    #print sspp, ',',ngroupOrigProc[proc][cut][sspp]
+                    tot=tot+ngroupOrigProc[proc][cut][bpp]
+                print >> resultsfile, '%10d' % tot,
+        print >> resultsfile, ' : ',
+    print >> resultsfile, ''
 
-        for gt in thissplit:
-            print '%10d' % gt ,
-        print ' : ',
-    print ''
 
 
 
-print '\n \n'
-print 'REDUCED TABLE2'
-print '%20s' % (''),
-print '%20s' % procgroupnames[0],
-print '%11s' % (''),
-print ' : ',
-print '%10s' % procgroupnames[1],
-print ' :',
-print '%10s' % procgroupnames[2]
-print ''
-print '%20s' % (''),
-print '%10s' % ('eff'),
-print '%10s' % ('nevt'),
-print '%10s' % ('OTH'),
-print ''
+sigGroupTable2={}
+sigGroupTable2[0]=[0]
+sigGroupTable2[1]=[3]
+sigGroupTable2[2]=[1,4]
+sigGroupTable2[3]=[2,5,6,7,8,9]
+sigGroupNames2={}
+sigGroupNames2[0]="HH-hm"
+sigGroupNames2[1]="HH-mm"
+sigGroupNames2[2]="HL-hm/mm"
+sigGroupNames2[3]="OTHER"
+
+print >> resultsfile, '\n \n'
+print >> resultsfile, 'REDUCED TABLE2'
+print >> resultsfile, '%34s' % (''),
+print >> resultsfile, '%20s' % procgroupnames[0],
+print >> resultsfile, '%34s' % (''),
+print >> resultsfile, ' : ',
+print >> resultsfile, '%10s' % procgroupnames[1],
+print >> resultsfile, ' :',
+print >> resultsfile, '%10s' % procgroupnames[2]
+print >> resultsfile, ''
+print >> resultsfile, '%20s' % (''),
+print >> resultsfile, '%10s' % ('Eff-'+sigGroupNames2[0]),
+for j in range(len(sigGroupNames2)):
+    print >> resultsfile, '%13s' % sigGroupNames2[j],
+print >> resultsfile, ''
+
+
 
 for cut in cutnames:
     if cut=='nMC':
         continue
-
-    print '%20s' % (cut),
+    print >> resultsfile, '%20s & ' % (cut),
     for proc in procgroupnames:
         thissplit=[]
-        if proc=='signal':
-            thissplit.append( float(ngroupOrigProc[proc][cut][0])/float(ngroupOrigProc[proc]['_nOrig'][0]) )
-            thissplit.append( ngroupOrigProc[proc][cut][0] )
-            thissplit.append( ngroupOrigProc[proc][cut][1]+ngroupOrigProc[proc][cut][2]+ngroupOrigProc[proc][cut][3]+ngroupOrigProc[proc][cut][4]+ngroupOrigProc[proc][cut][5]+ngroupOrigProc[proc][cut][6] )
-
-            print '%10.1f' % (100.*thissplit[0]),
-            for i in range(1, len(thissplit) ):
-                print '%10.1f' % float(thissplit[i]/1000.),
-
+        if proc=='2f_Z_lep':
+            for jj in range(len(sigGroupTable2)):
+                nsel=0.
+                norig=0.
+                for kk in sigGroupTable2[jj]:
+                    nsel=nsel+float(ngroupOrigProc[proc][cut][kk])
+                    norig=norig+float(ngroupOrigProc[proc]['_nOrig'][kk])
+                if jj==0:
+                    print >> resultsfile, '%10.1f & ' % (100.*nsel/norig),
+                print >> resultsfile, '%10.1f & ' % (nsel/1000.),
         else:
-            thissplit.append( ngroupOrigProc[proc][cut][0]+ngroupOrigProc[proc][cut][1]+ngroupOrigProc[proc][cut][2]+ngroupOrigProc[proc][cut][3]+ ngroupOrigProc[proc][cut][4]+ ngroupOrigProc[proc][cut][5]+ ngroupOrigProc[proc][cut][6] )
 
-            print '%10.1f' % float(thissplit[0]/1000.),
-        print ' : ',
-    print ''
+            tot=0.
+            for subt in ngroupOrigProc[proc][cut]:
+                tot=tot+subt
+
+#            thissplit.append( ngroupOrigProc[proc][cut][0]+ngroupOrigProc[proc][cut][1]+ngroupOrigProc[proc][cut][2]+ngroupOrigProc[proc][cut][3]+ ngroupOrigProc[proc][cut][4]+ ngroupOrigProc[proc][cut][5]+ ngroupOrigProc[proc][cut][6] )
+
+                # print >> resultsfile, '%10.1f & ' % float(thissplit[0]/1000.),
+            print >> resultsfile, '%10.1f & ' % float(tot/1000.),
+        print >> resultsfile, ' ',
+    print >> resultsfile, ''
+
+
+
+resultsfile.close()
 
 
 
@@ -407,21 +492,54 @@ if plotHistos or saveFitHistos:
 
     histonames2=[]
     for histoname in histonames:
-        if ( plotHistos and 'sample0' in histoname ) or \
-                ( saveFitHistos and 'sample0_SEL_rec_' in histoname and '_pol' in histoname ):
+        if ( ( plotHistos and 'sample0' in histoname ) or \
+                 ( saveFitHistos and ( ( 'sample0_SEL_rec_' in histoname and '_pol' in histoname ) or \
+                                           ( 'sample0' in histoname and 'mcPolar' in histoname ) or \
+                                           (  'sample0' in histoname and 'recCheatGam'  in histoname ) ) ) ) :
             histonames2.append(histoname)
             
             # ) or ( doFits and 'sample0' in histoname and 'SEL_rec_rho_pol' in histoname):
 
+    # print histonames2
+
     grouping={}
     grouping['2f_Z_leptonic']={}
+
+    # grouping['2f_Z_leptonic'][0]=0  # 2f 2tau sig
+    # grouping['2f_Z_leptonic'][1]=1  # 2f 2tau bkg
+    # grouping['2f_Z_leptonic'][2]=1
+    # grouping['2f_Z_leptonic'][3]=1
+    # grouping['2f_Z_leptonic'][4]=2  # 2f not 2tau 
+    # grouping['2f_Z_leptonic'][5]=2
+    # grouping['2f_Z_leptonic'][6]=2
+
+    # for new groupings 4/2019
     grouping['2f_Z_leptonic'][0]=0  # 2f 2tau sig
-    grouping['2f_Z_leptonic'][1]=1  # 2f 2tau bkg
-    grouping['2f_Z_leptonic'][2]=1
-    grouping['2f_Z_leptonic'][3]=1
-    grouping['2f_Z_leptonic'][4]=2  # 2f not 2tau 
-    grouping['2f_Z_leptonic'][5]=2
-    grouping['2f_Z_leptonic'][6]=2
+    grouping['2f_Z_leptonic'][1]=0
+    grouping['2f_Z_leptonic'][2]=1  # 2f 2tau bkg (no had decay)
+    grouping['2f_Z_leptonic'][3]=1  # < 480
+    grouping['2f_Z_leptonic'][4]=1
+    grouping['2f_Z_leptonic'][5]=1
+    grouping['2f_Z_leptonic'][6]=1  # < 250 GeV
+    grouping['2f_Z_leptonic'][7]=2  # 2f not 2tau 
+    grouping['2f_Z_leptonic'][8]=2
+    grouping['2f_Z_leptonic'][9]=2
+
+
+
+#    grouping['2f_Z_leptonic_MCPol']={}
+#    grouping['2f_Z_leptonic_MCPol'][0]=0  # 2f 2tau sig
+#    grouping['2f_Z_leptonic_MCPol'][1]=0
+#    grouping['2f_Z_leptonic_MCPol'][2]=1  # 2f 2tau bkg (no had decay)
+#    grouping['2f_Z_leptonic_MCPol'][3]=1     # [250-480]
+#    grouping['2f_Z_leptonic_MCPol'][4]=1
+#    grouping['2f_Z_leptonic_MCPol'][5]=1
+#    grouping['2f_Z_leptonic_MCPol'][6]=1  # < 250 GeV
+#    grouping['2f_Z_leptonic_MCPol'][7]=2  # 2f not 2tau 
+#    grouping['2f_Z_leptonic_MCPol'][8]=2
+#    grouping['2f_Z_leptonic_MCPol'][9]=2
+
+
 
     grouping['2f_Z_hadronic']={}
     grouping['2f_Z_bhabhag']={}
@@ -430,13 +548,25 @@ if plotHistos or saveFitHistos:
         grouping['2f_Z_hadronic'][i]=2
 
     grouping['4f']={}
+    # grouping['4f'][0]=5  # 4f 2T
+    # grouping['4f'][1]=5
+    # grouping['4f'][2]=5
+    # grouping['4f'][3]=5
+    # grouping['4f'][4]=3  # 4f 0T
+    # grouping['4f'][5]=4  # 4f 1T
+    # grouping['4f'][6]=6  # 4f >2T
+
+    # for new groupings 4/2019
     grouping['4f'][0]=5  # 4f 2T
     grouping['4f'][1]=5
     grouping['4f'][2]=5
     grouping['4f'][3]=5
-    grouping['4f'][4]=3  # 4f 0T
-    grouping['4f'][5]=4  # 4f 1T
-    grouping['4f'][6]=6  # 4f >2T
+    grouping['4f'][4]=5
+    grouping['4f'][5]=5
+    grouping['4f'][6]=5
+    grouping['4f'][7]=3  # 4f 0T
+    grouping['4f'][8]=4  # 4f 1T
+    grouping['4f'][9]=6  # 4f >2T
 
     grouplabels={}
     grouplabels[0]="2-tau signal"
@@ -543,7 +673,7 @@ if plotHistos or saveFitHistos:
 
         if 'sample0' in histoname:
 
-            # print histoname
+            print histoname
 
             for cl in orderedClasses:
                 # print cl, rootfiles[cl].keys()
@@ -574,6 +704,12 @@ if plotHistos or saveFitHistos:
                             group=gr
                             break
 
+                    #if group=='2f_Z_leptonic':
+                    #    if 'mcPolar' in histoname and 'SEL' not in histoname:
+                    #        print 'HELLO!', histoname
+                    #        group='2f_Z_leptonic_MCPol'
+
+
                     for icl in range(nclass):
                         hh = rootfile.Get(histoname.replace('sample0','sample'+str(icl)) )
                         hh.Scale(procweight[rk])
@@ -588,7 +724,7 @@ if plotHistos or saveFitHistos:
                 hstack2.Add(groupedHistos[gh])
 
 
-            if saveFitHistos and 'SEL_rec_' in histoname:
+            if saveFitHistos and ( 'pol' in histoname or 'Polar' in histoname ):
                 print 'trying to write histos to file...', histoname
                 fithistos.cd()
                 for gh in groupedHistos:
