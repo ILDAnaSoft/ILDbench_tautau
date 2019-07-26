@@ -225,8 +225,8 @@ class zInfo {
   const std::vector < const EVENT::ReconstructedParticle* > & getPhotons() { return FSRcandidates; }
 
  private:
-  std::vector < const EVENT::ReconstructedParticle* > tracks;
-  std::vector < const EVENT::ReconstructedParticle* > FSRcandidates;
+  std::vector < const EVENT::ReconstructedParticle* > tracks{};
+  std::vector < const EVENT::ReconstructedParticle* > FSRcandidates{};
 
 };
 

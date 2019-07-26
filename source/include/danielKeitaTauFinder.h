@@ -55,53 +55,58 @@ class danielKeitaTauFinderProcessor : public Processor {
   void printEff(int* nsel, int* norig, std::ofstream & resultsfile);
   std::vector < std::pair <TVector3, TVector3> > getNuMom( TLorentzVector jet1,  TLorentzVector jet2, float ecom, int & iflag );
 
-  float _conesize;
+  float _conesize{};
 
-  int _nNotconvertedInTrk, _nconvertedInTrk;
+  int _nNotconvertedInTrk{};
+  int _nconvertedInTrk{};
 
-  bool _highestPt;
-  bool _useDistilled;
+  bool _highestPt{};
+  bool _useDistilled{};
+  bool _selectOnlyFullyHadronicDecays{};
 
-  tautau2fEventFitter* _2tauEvtFitter;
+  tautau2fEventFitter* _2tauEvtFitter{};
 
-  std::string _outfile;
-  TFile* _fout;
-  TH1F* h_gamgam_mass;
+  int _evtCount{};
 
-  TH1F* h_ttmass;
-  TH1F* hSEL_ttmass;
+  std::string _outfile{};
+  TFile* _fout{};
+  TH1F* h_gamgam_mass{};
 
-  TH2F* h_conversionPos;
-  TH2F* h_v0Pos;
+  TH1F* h_ttmass{};
+  TH1F* hSEL_ttmass{};
 
-  TH2F* h_conversionPos2;
-  TH2F* h_v0Pos2;
+  TH2F* h_conversionPos{};
+  TH2F* h_v0Pos{};
 
-  TH1F* h_neuPandoraCompound_mass;
-  TH1F* h_neuPandoraCompound_ntrk;
-  TH2F* h_neuPandoraCompound_vtxPos;
-  TH2F* h_neuPandoraCompound_vtxPos2;
-  TH1F* h_neuPandoraCompound_vtxChisq;
+  TH2F* h_conversionPos2{};
+  TH2F* h_v0Pos2{};
 
-  TH2F* h_neutronClus_eOnP_beforeAfter;
+  TH1F* h_neuPandoraCompound_mass{};
+  TH1F* h_neuPandoraCompound_ntrk{};
+  TH2F* h_neuPandoraCompound_vtxPos{};
+  TH2F* h_neuPandoraCompound_vtxPos2{};
+  TH1F* h_neuPandoraCompound_vtxChisq{};
 
-  TH2F* h_neutralHadronPFO_mainMCcontrib_pdgEn;
-  TH1F* h_rhoDecaySinglePhoClus_reason;
-  TH2F* h_rhoDecaySinglePhoClus_mergedGammaClusterEval1;
-  TH2F* h_rhoDecaySinglePhoClus_singleGammaClusterEval1;
-  TH2F* h_rhoDecaySinglePhoClus_mergedGammaClusterEval2;
-  TH2F* h_rhoDecaySinglePhoClus_singleGammaClusterEval2;
-  TH2F* h_rhoDecaySinglePhoClus_mergedGammaClusterEvalRatio;
-  TH2F* h_rhoDecaySinglePhoClus_singleGammaClusterEvalRatio;
-  TH2F* h_rhoDecaySinglePhoClus_mergedGammaMCEns;
-  TH1F* h_rhoDecaySinglePhoClus_mergedGammaMCAngle;
+  TH2F* h_neutronClus_eOnP_beforeAfter{};
+  TH1F* h_neutronClus_eOnPdiff_beforeAfter{};
+
+  TH2F* h_neutralHadronPFO_mainMCcontrib_pdgEn{};
+  TH1F* h_rhoDecaySinglePhoClus_reason{};
+  TH2F* h_rhoDecaySinglePhoClus_mergedGammaClusterEval1{};
+  TH2F* h_rhoDecaySinglePhoClus_singleGammaClusterEval1{};
+  TH2F* h_rhoDecaySinglePhoClus_mergedGammaClusterEval2{};
+  TH2F* h_rhoDecaySinglePhoClus_singleGammaClusterEval2{};
+  TH2F* h_rhoDecaySinglePhoClus_mergedGammaClusterEvalRatio{};
+  TH2F* h_rhoDecaySinglePhoClus_singleGammaClusterEvalRatio{};
+  TH2F* h_rhoDecaySinglePhoClus_mergedGammaMCEns{};
+  TH1F* h_rhoDecaySinglePhoClus_mergedGammaMCAngle{};
 
   enum {NCLASS=10, NDEC=8};
 
   std::string classLabels[NCLASS];
 
-  TH2F* h_mctautau_ecom_tauMinusCosth;
-  TH2F* h_mctautau_ecom_tauMinusHel;
+  TH2F* h_mctautau_ecom_tauMinusCosth{};
+  TH2F* h_mctautau_ecom_tauMinusHel{};
   
   TH2F* h_mctautau_tauMinusCosth_tauMinusHel[NCLASS];
 
@@ -131,6 +136,32 @@ class danielKeitaTauFinderProcessor : public Processor {
 
   TH1F* h_rho_mcPolarApprox[NCLASS];
   TH1F* h_pi_mcPolarApprox[NCLASS];
+
+  TH1F* hselA_rho_mcPolarApprox[NCLASS];
+  TH1F* hselA_pi_mcPolarApprox[NCLASS];
+
+  TH1F* hselB_rho_mcPolarApprox[NCLASS];
+  TH1F* hselB_pi_mcPolarApprox[NCLASS];
+
+  TH1F* hselC_rho_mcPolarApprox[NCLASS];
+  TH1F* hselC_pi_mcPolarApprox[NCLASS];
+
+  TH1F* hselD_rho_mcPolarApprox[NCLASS];
+  TH1F* hselD_pi_mcPolarApprox[NCLASS];
+
+  TH1F* hselE_rho_mcPolarApprox[NCLASS];
+  TH1F* hselE_pi_mcPolarApprox[NCLASS];
+
+  TH1F* hselF_rho_mcPolarApprox[NCLASS];
+  TH1F* hselF_pi_mcPolarApprox[NCLASS];
+
+  TH1F* hselG_rho_mcPolarApprox[NCLASS];
+  TH1F* hselG_pi_mcPolarApprox[NCLASS];
+
+  TH1F* hselH_rho_mcPolarApprox[NCLASS];
+  TH1F* hselH_pi_mcPolarApprox[NCLASS];
+
+
   
   TH1F* h_rho_mcPolarApproxCheatEn[NCLASS];
   TH1F* h_pi_mcPolarApproxCheatEn[NCLASS];
@@ -172,14 +203,14 @@ class danielKeitaTauFinderProcessor : public Processor {
   TH2F* h_npfo_chg_nneu[NCLASS];
 
 
-  TH1F*  h_gammaClus_nMajor;
-  TH1F*  h_gammaClus_nSignf;
-  TH2F*  h_gammaClus_nSignf_bMass;
-  TH2F*  h_gammaClus_nSignf_bDist;
-  TH1F*  h_neutronClus_nMajor;
-  TH1F*  h_neutronClus_nSignf;
-  TH2F*  h_neutronClus_nSignf_bMass;
-  TH2F*  h_neutronClus_nSignf_bDist;
+  TH1F*  h_gammaClus_nMajor{};
+  TH1F*  h_gammaClus_nSignf{};
+  TH2F*  h_gammaClus_nSignf_bMass{};
+  TH2F*  h_gammaClus_nSignf_bDist{};
+  TH1F*  h_neutronClus_nMajor{};
+  TH1F*  h_neutronClus_nSignf{};
+  TH2F*  h_neutronClus_nSignf_bMass{};
+  TH2F*  h_neutronClus_nSignf_bDist{};
 
 
 
@@ -486,8 +517,8 @@ class danielKeitaTauFinderProcessor : public Processor {
   int _nCumulSel_isr[NCLASS];
   int _nCumulSel[NCLASS];
 
-  LCRelationNavigator* _relNavi;
-  LCRelationNavigator* _relNavi2;
+  LCRelationNavigator* _relNavi{};
+  LCRelationNavigator* _relNavi2{};
 
 
 };

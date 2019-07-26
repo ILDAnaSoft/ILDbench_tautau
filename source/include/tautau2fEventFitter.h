@@ -82,9 +82,9 @@ class tautau2fEventFitter {
 
  private:
 
-  float _ecom;
+  float _ecom{};
 
-  TLorentzVector recoil;
+  TLorentzVector recoil{};
   enum { ntau=2 };
 
   bool multiProng[ntau];
@@ -120,9 +120,9 @@ class tautau2fEventFitter {
   void prepareForFit();
   bool calculateNeutrino(int itau);
   double fitfn_single_single(const double* pars);
-  bool verbose;
-  bool prepared;
-  bool goodfit;
+  bool verbose{};
+  bool prepared{};
+  bool goodfit{};
 
   TVector3 getEVector( TVector3 momentum, TVector3 impactVector );
 
@@ -130,8 +130,8 @@ class tautau2fEventFitter {
   static const float m_tau;
   static const float ctau_tau;
 
-  ROOT::Math::Functor* functor; // ( this, & tautau2fEventFitter::fitfn_single_single, 2);
-  ROOT::Math::Minimizer* minimizer;
+  ROOT::Math::Functor* functor{}; // ( this, & tautau2fEventFitter::fitfn_single_single, 2);
+  ROOT::Math::Minimizer* minimizer{};
 
   
 };
