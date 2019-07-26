@@ -180,6 +180,9 @@ std::vector < float > tauUtils::getClusterEigenvalues( const Cluster* clu, const
 //  cout << eval_readback [0] << " " << eval_readback[1] << " " << eval_readback[2] << endl;
   
   std::vector <float> evals;
+//  evals.push_back( sqrt( eval_readback[0] ) ); // use the sqrt of the eigenvalue
+//  evals.push_back( sqrt( eval_readback[1] ) );
+//  evals.push_back( sqrt( eval_readback[2] ) );
   evals.push_back( eval_readback[0] );
   evals.push_back( eval_readback[1] );
   evals.push_back( eval_readback[2] );
@@ -222,6 +225,7 @@ std::vector < float > tauUtils::getClusterEigenvalues_DJ( const Cluster* cl ) {
   std::vector <float> evals;
   for (int kk=0; kk<3; kk++) {
     evals.push_back( fabs(eigenValues[kk]) );
+    // evals.push_back( sqrt(fabs(eigenValues[kk])) ); // use sqrt of eigenvalue for the lengths
   }
   std::sort(evals.begin(), evals.end());
 

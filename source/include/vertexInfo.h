@@ -94,24 +94,24 @@ class vertexInfo{
 
  private:
 
-  bool _useIPcons;
-  bool _trimTracks;
-  float _bField;
-  TVector3 _seed;
+  bool _useIPcons{};
+  bool _trimTracks{};
+  float _bField{};
+  TVector3 _seed{};
 
-  std::vector < vertex_lcfi::Track* > lcfi_tracks;
-  std::vector < vertex_lcfi::TrackState* > lcfi_trackstates;
+  std::vector < vertex_lcfi::Track* > lcfi_tracks{};
+  std::vector < vertex_lcfi::TrackState* > lcfi_trackstates{};
 
-  TVector3 _vtxPos;
-  bool _vtxValid;
-  float _chisq;
+  TVector3 _vtxPos{};
+  bool _vtxValid{};
+  float _chisq{};
 
   TVector3 _eigenVectors[3];
   float _eigenValues[3];
 
   float _ipSize[3];
 
-  std::vector < IMPL::ReconstructedParticleImpl* > myrecoparts;
+  std::vector < IMPL::ReconstructedParticleImpl* > myrecoparts{};
 
   void cleanup();
 

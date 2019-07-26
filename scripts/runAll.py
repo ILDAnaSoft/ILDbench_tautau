@@ -6,13 +6,13 @@ topindir='/group/ilc/soft/samples/mc-opt-3/ild/dst-merged/500-TDR_ws/'
 
 models=['ILD_l5_o1_v02', 'ILD_s5_o1_v02']
 
-# samples=['2f_Z_leptonic']
+samples=['2f_Z_leptonic']
 
-samples=['2f_Z_bhabhag','2f_Z_hadronic','2f_Z_leptonic','4f_WW_hadronic','4f_WW_leptonic','4f_WW_semileptonic','4f_ZZWWMix_hadronic','4f_ZZWWMix_leptonic','4f_ZZ_hadronic','4f_ZZ_leptonic','4f_ZZ_semileptonic','4f_singleW_leptonic','4f_singleW_semileptonic','4f_singleZee_leptonic','4f_singleZee_semileptonic','4f_singleZnunu_leptonic','4f_singleZnunu_semileptonic','4f_singleZsingleWMix_leptonic']
+# samples=['2f_Z_bhabhag','2f_Z_hadronic','2f_Z_leptonic','4f_WW_hadronic','4f_WW_leptonic','4f_WW_semileptonic','4f_ZZWWMix_hadronic','4f_ZZWWMix_leptonic','4f_ZZ_hadronic','4f_ZZ_leptonic','4f_ZZ_semileptonic','4f_singleW_leptonic','4f_singleW_semileptonic','4f_singleZee_leptonic','4f_singleZee_semileptonic','4f_singleZnunu_leptonic','4f_singleZnunu_semileptonic','4f_singleZsingleWMix_leptonic']
 # ,'5f','6f_eeWW','6f_llWW','6f_ttbar','6f_vvWW','6f_xxWW','6f_xxxxZ','6f_yyyyZ','aa_4f','higgs_ffh']
 
 maxevt=0
-# maxevt=100000
+# maxevt=10000000
 
 
 # samples=['2f_Z_bhabhag','2f_Z_hadronic','2f_Z_leptonic']
@@ -45,7 +45,7 @@ for model in models:
 
             for pol in procsPols[proc]:
         
-                jobname=model+'_'+samp+'_'+proc+'_'+pol
+                jobname=model+'_'+samp+'_'+proc+'_'+pol+'_oneHadSS'
 
                 if maxevt==0:
                     jobname='ALLEVT_'+jobname

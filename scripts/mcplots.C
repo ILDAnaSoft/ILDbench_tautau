@@ -17,25 +17,49 @@ int ptype_size[2]={21,22};
 
 TString ILDlab="ILD preliminary";
 
+TString figdir;
+
 TText ttf;
 TText ttt;
 TLatex ttltx;
 
 void init() {
 
-  if ( 1 ) {
+  if ( 0 ) {
 
     fin[0][0]=new TFile("tauFind_ALLEVT_ILD_l5_o1_v02_2f_Z_leptonic_I250106_eL.pR.root","read");
     fin[0][1]=new TFile("tauFind_ALLEVT_ILD_l5_o1_v02_2f_Z_leptonic_I250108_eR.pL.root","read");
     fin[1][0]=new TFile("tauFind_ALLEVT_ILD_s5_o1_v02_2f_Z_leptonic_I250106_eL.pR.root","read");
     fin[1][1]=new TFile("tauFind_ALLEVT_ILD_s5_o1_v02_2f_Z_leptonic_I250108_eR.pL.root","read");
 
-  } else {
+    figdir="figs_ALLEVT/";
+
+  } else if (0) {
 
     fin[0][0]=new TFile("tauFind_ILD_l5_o1_v02_2f_Z_leptonic_I250106_eL.pR.root","read");
     fin[0][1]=new TFile("tauFind_ILD_l5_o1_v02_2f_Z_leptonic_I250108_eR.pL.root","read");
     fin[1][0]=new TFile("tauFind_ILD_s5_o1_v02_2f_Z_leptonic_I250106_eL.pR.root","read");
     fin[1][1]=new TFile("tauFind_ILD_s5_o1_v02_2f_Z_leptonic_I250108_eR.pL.root","read");
+
+    figdir="figs/";
+
+  } else if ( 0 ) {
+
+    fin[0][0]=new TFile("tauFind_ILD_l5_o1_v02_2f_Z_leptonic_I250106_eL.pR_oneHad.root","read");
+    fin[0][1]=new TFile("tauFind_ILD_l5_o1_v02_2f_Z_leptonic_I250108_eR.pL_oneHad.root","read");
+    fin[1][0]=new TFile("tauFind_ILD_s5_o1_v02_2f_Z_leptonic_I250106_eL.pR_oneHad.root","read");
+    fin[1][1]=new TFile("tauFind_ILD_s5_o1_v02_2f_Z_leptonic_I250108_eR.pL_oneHad.root","read");
+
+    figdir="figs_onehad/";
+
+  } else if ( 1 ) {
+
+    fin[0][0]=new TFile("data_ALLEVToneHad/tauFind_ALLEVToneHad_ILD_l5_o1_v02_2f_Z_leptonic_I250106_eL.pR.root","read");
+    fin[0][1]=new TFile("data_ALLEVToneHad/tauFind_ALLEVToneHad_ILD_l5_o1_v02_2f_Z_leptonic_I250108_eR.pL.root","read");
+    fin[1][0]=new TFile("data_ALLEVToneHad/tauFind_ALLEVToneHad_ILD_s5_o1_v02_2f_Z_leptonic_I250106_eL.pR.root","read");
+    fin[1][1]=new TFile("data_ALLEVToneHad/tauFind_ALLEVToneHad_ILD_s5_o1_v02_2f_Z_leptonic_I250108_eR.pL.root","read");
+
+    figdir="data_ALLEVToneHad/figs_ALLEVToneHad/";
 
   }
 
@@ -54,11 +78,11 @@ void mcplots() {
 
   gStyle->SetOptStat(0);
 
-  //fin[0]=new TFile("tauFind_ILD_l5_o1_v02_2f_Z_leptonic_I250106_eL.pR.root","read");
-  //fin[1]=new TFile("tauFind_ILD_l5_o1_v02_2f_Z_leptonic_I250108_eR.pL.root","read");
+
+  TString pln=figdir+"allMCPlots.pdf";
 
   TCanvas* cc = new TCanvas("cc","cc",400,400);
-  cc->Print("allMCPlots.pdf[");
+  cc->Print(pln+"[");
 
   TString pols[2]={"eLpR", "eRpL"};
   TString pollabs[2]={"eLpR(100%)", "eRpL(100%)"};
@@ -86,6 +110,8 @@ void mcplots() {
 	h3[2]->SetLineColor(8);
 
 	TString ttyy=type;
+	if ( ttyy == "Exact" ) ttyy = "Optimal";
+
 	ttyy.ToLower();
 
 	cout << type << " " << ttyy << endl;
@@ -103,9 +129,9 @@ void mcplots() {
 	ttt.DrawTextNDC(0.65, 0.94, pollabs[j]);
 	ttt.DrawTextNDC(0.2, 0.94, "MC level");
 
-	cc->Print("figs/mcplot_"+pols[j]+"_"+dec+"_mcPolar"+type+".eps");
-	cc->Print("figs/mcplot_"+pols[j]+"_"+dec+"_mcPolar"+type+".C");
-	cc->Print("allMCPlots.pdf");
+	cc->Print(figdir+"mcplot_"+pols[j]+"_"+dec+"_mcPolar"+type+".eps");
+	cc->Print(figdir+"mcplot_"+pols[j]+"_"+dec+"_mcPolar"+type+".C");
+	cc->Print(pln);
       }
     }
   }
@@ -147,14 +173,14 @@ void mcplots() {
     tl->Draw();
     ttt.DrawTextNDC(0.2, 0.94, "MC level");
 
-    cc->Print("figs/mcplot_"+hnames1d[i]+".eps");
-    cc->Print("figs/mcplot_"+hnames1d[i]+".C");
-    cc->Print("allMCPlots.pdf");
+    cc->Print(figdir+"mcplot_"+hnames1d[i]+".eps");
+    cc->Print(figdir+"mcplot_"+hnames1d[i]+".C");
+    cc->Print(pln);
   }
 
   
 
-  cc->Print("allMCPlots.pdf]");
+  cc->Print(pln+"]");
 
   //for (int j=0; j<2; j++) {
   //  fin[j]->Close();
@@ -310,8 +336,8 @@ void getDecayModeEff() {
 
 
   }
-  cc->Print("figs/mcplot_decay.eps");
-  cc->Print("figs/mcplot_decay.C");
+  cc->Print(figdir+"mcplot_decay.eps");
+  cc->Print(figdir+"mcplot_decay.C");
 
   float geff[2][3];
   float gdeff[2][3];
@@ -353,6 +379,7 @@ void getDecayModeEff() {
   }
 
   TLegend* tl = new TLegend(0.23, 0.75, 0.5, 0.88);
+  tl->SetFillStyle(0);
   tl->AddEntry( gre[0], "IDR-L", "l" );
   tl->AddEntry( gre[1], "IDR-S", "l" );
 
@@ -379,8 +406,8 @@ void getDecayModeEff() {
   ttltx.DrawLatexNDC(0.55, 0.25, "#sqrt{s} = 500 GeV");
 
 
-  cc->Print("figs/decmodeEffPur.eps");
-  cc->Print("figs/decmodeEffPur.C");
+  cc->Print(figdir+"decmodeEffPur.eps");
+  cc->Print(figdir+"decmodeEffPur.C");
 
 
 
@@ -408,8 +435,8 @@ void getDecayModeEff() {
   ttltx.DrawLatexNDC(0.22, 0.35, "e^{+}e^{#minus} #rightarrow #tau^{+}#tau^{#minus}");
   ttltx.DrawLatexNDC(0.22, 0.25, "#sqrt{s} = 500 GeV");
 
-  cc->Print("figs/decmodeEffTimesPur.eps");
-  cc->Print("figs/decmodeEffTimesPur.C");
+  cc->Print(figdir+"decmodeEffTimesPur.eps");
+  cc->Print(figdir+"decmodeEffTimesPur.C");
 
 
 
@@ -432,6 +459,7 @@ void getDecayModeEff() {
   }
 
   cc->Clear();
+  //  hdpol[0][0]->SetMaximum(1.2*hdpol[0][0]->GetMaximum());
   hdpol[0][0]->Draw();
   hdpol[0][0]->SetTitle("");
   hdpol[0][0]->GetXaxis()->SetRangeUser(-0.5, 0.5);
@@ -441,8 +469,8 @@ void getDecayModeEff() {
   tl->Draw();
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
-  cc->Print("figs/dPolRho.eps");
-  cc->Print("figs/dPolRho.C");
+  cc->Print(figdir+"dPolRho.eps");
+  cc->Print(figdir+"dPolRho.C");
 
 
   for (int idet=0; idet<2; idet++) {// large/small
@@ -457,6 +485,7 @@ void getDecayModeEff() {
   }
 
   cc->Clear();
+  hdpol[0][0]->SetMaximum(1.25 * hdpol[0][0]->GetMaximum() );
   hdpol[0][0]->Draw();
   hdpol[0][0]->SetTitle("");
   hdpol[0][0]->GetXaxis()->SetRangeUser(-0.1, 0.1);
@@ -466,8 +495,8 @@ void getDecayModeEff() {
   tl->Draw();
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
-  cc->Print("figs/dPolPi.eps");
-  cc->Print("figs/dPolPi.C");
+  cc->Print(figdir+"dPolPi.eps");
+  cc->Print(figdir+"dPolPi.C");
 
 
   for (int idet=0; idet<2; idet++) {// large/small
@@ -484,6 +513,7 @@ void getDecayModeEff() {
   }
 
   cc->Clear();
+  hpold[0][0]->SetMaximum(1.25*hpold[0][0]->GetMaximum());
   hpold[0][0]->Draw();
   hpold[0][0]->SetTitle("");
   hpold[0][0]->GetXaxis()->SetTitle("#rho polarimeter (rec)");
@@ -494,8 +524,8 @@ void getDecayModeEff() {
   tl->Draw();
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
-  cc->Print("figs/PolRho.eps");
-  cc->Print("figs/PolRho.C");
+  cc->Print(figdir+"PolRho.eps");
+  cc->Print(figdir+"PolRho.C");
 
   for (int idet=0; idet<2; idet++) {// large/small
     for (int j=0; j<2; j++) {
@@ -506,11 +536,16 @@ void getDecayModeEff() {
       hpold[idet][j]->SetLineStyle( ltype_size[idet] );
       hpold[idet][j]->SetMarkerColor( color_size[idet] );
       hpold[idet][j]->SetMarkerStyle( ptype_size[idet] );
-      hpold[idet][j]->Rebin(10);
+      //      hpold[idet][j]->Rebin(10);
+      hpold[idet][j]->Rebin(5);
     }
   }
 
   cc->Clear();
+
+  cout << hpold[0][0]->GetMaximum() << endl;
+
+  hpold[0][0]->SetMaximum(1.25*hpold[1][0]->GetMaximum());
   hpold[0][0]->Draw();
   hpold[0][0]->SetTitle("");
   hpold[0][0]->GetXaxis()->SetTitle("#pi polarimeter (rec)");
@@ -521,8 +556,8 @@ void getDecayModeEff() {
   tl->Draw();
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
-  cc->Print("figs/PolPi.eps");
-  cc->Print("figs/PolPi.C");
+  cc->Print(figdir+"PolPi.eps");
+  cc->Print(figdir+"PolPi.C");
 
 
 
@@ -540,6 +575,7 @@ void getDecayModeEff() {
   }
 
   cc->Clear();
+  hpold[0][0]->SetMaximum(1.25*hpold[0][0]->GetMaximum());
   hpold[0][0]->Draw();
   hpold[0][0]->SetTitle("");
   hpold[0][0]->GetXaxis()->SetTitle("#rho polarimeter (MC)");
@@ -550,8 +586,8 @@ void getDecayModeEff() {
   tl->Draw();
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
-  cc->Print("figs/PolRhoMC.eps");
-  cc->Print("figs/PolRhoMC.C");
+  cc->Print(figdir+"PolRhoMC.eps");
+  cc->Print(figdir+"PolRhoMC.C");
 
   for (int idet=0; idet<2; idet++) {// large/small
     for (int j=0; j<2; j++) {
@@ -562,12 +598,24 @@ void getDecayModeEff() {
       hpold[idet][j]->SetLineStyle( ltype_size[idet] );
       hpold[idet][j]->SetMarkerColor( color_size[idet] );
       hpold[idet][j]->SetMarkerStyle( ptype_size[idet] );
-      hpold[idet][j]->Rebin(10);
+      //      hpold[idet][j]->Rebin(10);
+      hpold[idet][j]->Rebin(5);
     }
   }
 
   cc->Clear();
+  //  hpold[0][0]->SetMaximum(1.2*hpold[0][0]->GetMaximum());
+
+  cout << hpold[0][0]->GetMaximum() << endl;
+
+  hpold[0][0]->SetMaximum( hpold[0][1]->GetMaximum() * 1.45 );
+
+  cout << hpold[0][0]->GetMaximum() << endl;
+
   hpold[0][0]->Draw();
+
+  cout << hpold[0][0]->GetMaximum() << endl;
+
   hpold[0][0]->SetTitle("");
   hpold[0][0]->GetXaxis()->SetTitle("#pi polarimeter (mc)");
   hpold[1][0]->Draw("same");
@@ -577,8 +625,8 @@ void getDecayModeEff() {
   tl->Draw();
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
-  cc->Print("figs/PolPiMC.eps");
-  cc->Print("figs/PolPiMC.C");
+  cc->Print(figdir+"PolPiMC.eps");
+  cc->Print(figdir+"PolPiMC.C");
 
 
 //  for (int j=0; j<2; j++) {
@@ -643,7 +691,7 @@ void simpleLargeSmallPlots() {
   hmaxX["sample0__RHO_SELconeTRIM_neutralvisMass"]=1.;
 
   TCanvas* cc = new TCanvas("cc","cc",400,400);
-  cc->Print("allSimpleLargeSmallPlots.pdf[");
+  cc->Print(figdir+"allSimpleLargeSmallPlots.pdf[");
 
   TLegend* tl = new TLegend( 0.6, 0.7, 0.9, 0.9);
   TH1F* h[2];
@@ -708,9 +756,9 @@ void simpleLargeSmallPlots() {
     ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
 
-    cc->Print("figs/compareplot_"+hnames1d[i]+".eps");
-    cc->Print("figs/compareplot_"+hnames1d[i]+".C");
-    cc->Print("allSimpleLargeSmallPlots.pdf");
+    cc->Print(figdir+"compareplot_"+hnames1d[i]+".eps");
+    cc->Print(figdir+"compareplot_"+hnames1d[i]+".C");
+    cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
   }
 
   cc->SetLogy(0);
@@ -724,17 +772,17 @@ void simpleLargeSmallPlots() {
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
 
-  cc->Print("figs/neutralHadPFOs.eps");
-  cc->Print("figs/neutralHadPFOs.C");
-  cc->Print("allSimpleLargeSmallPlots.pdf");
+  cc->Print(figdir+"neutralHadPFOs.eps");
+  cc->Print(figdir+"neutralHadPFOs.C");
+  cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
 
   TH1F* jj = (TH1F*) fin[0][0]->Get("rhoDecaySinglePhoClus_reason");
   jj->SetTitle("");
   jj->Draw();
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
-  cc->Print("figs/onlyOneClusReason.eps");
-  cc->Print("figs/onlyOneClusReason.C");
-  cc->Print("allSimpleLargeSmallPlots.pdf");
+  cc->Print(figdir+"onlyOneClusReason.eps");
+  cc->Print(figdir+"onlyOneClusReason.C");
+  cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
 
   TH2F* jj2 = (TH2F*) fin[0][0]->Get("neutronClus_eOnP_beforeAfter");
   jj2->SetTitle("");
@@ -742,9 +790,10 @@ void simpleLargeSmallPlots() {
   jj2->GetYaxis()->SetTitle("E/p [merged]");
   jj2->Draw("box");
   ttf.DrawTextNDC(0.5, 0.95, ILDlab);
-  cc->Print("figs/EonPmergingNHAD.eps");
-  cc->Print("figs/EonPmergingNHAD.C");
-  cc->Print("allSimpleLargeSmallPlots.pdf");
+  cc->Print(figdir+"EonPmergingNHAD.eps");
+  cc->Print(figdir+"EonPmergingNHAD.C");
+  cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
+
 
   cc->Clear();
   cc->SetLogy();
@@ -764,10 +813,25 @@ void simpleLargeSmallPlots() {
 
   ddl.Draw();
 
-  cc->Print("figs/EonPmergingNHAD_1d.eps");
-  cc->Print("figs/EonPmergingNHAD_1d.C");
-  cc->Print("allSimpleLargeSmallPlots.pdf");
+  cc->Print(figdir+"EonPmergingNHAD_1d.eps");
+  cc->Print(figdir+"EonPmergingNHAD_1d.C");
+  cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
   cc->SetLogy(0);
+
+
+  TH1F* jj3 = (TH1F*) fin[0][0]->Get("neutronClus_eOnPdiff_beforeAfter");
+  cc->Clear();
+  jj3->SetTitle("");
+  jj3->GetXaxis()->SetTitle("|E/p|_{orig} - |E/p|_{merge}");
+  //  jj3->GetYaxis()->SetTitle("events");
+  jj3->Draw();
+  ttf.DrawTextNDC(0.5, 0.95, ILDlab);
+  
+  cc->Print(figdir+"EonPmergingNHAD_DIFF.eps");
+  cc->Print(figdir+"EonPmergingNHAD_DIFF.C");
+  cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
+
+
 
 
   TH2F* jjk[2][4];
@@ -801,21 +865,21 @@ void simpleLargeSmallPlots() {
 
     if ( j==0 ) {
       jjk[0][j]->GetYaxis()->SetTitle("1st cluster e-val [mm]");
-      cc->Print("figs/eval1.eps");
-      cc->Print("figs/eval1.C");
+      cc->Print(figdir+"eval1.eps");
+      cc->Print(figdir+"eval1.C");
     } else if ( j==1 ) {
       jjk[0][j]->GetYaxis()->SetTitle("2nd cluster e-val [mm]");
-      cc->Print("figs/eval2.eps");
-      cc->Print("figs/eval2.C");
+      cc->Print(figdir+"eval2.eps");
+      cc->Print(figdir+"eval2.C");
     } else if ( j==2 ) {
       jjk[0][j]->GetYaxis()->SetTitle("1st/2nd cluster e-val ratio");
-      cc->Print("figs/evalRatio.eps");
-      cc->Print("figs/evalRatio.C");
+      cc->Print(figdir+"evalRatio.eps");
+      cc->Print(figdir+"evalRatio.C");
     }
 
 
 
-    cc->Print("allSimpleLargeSmallPlots.pdf");
+    cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
   }
 
 
@@ -833,7 +897,7 @@ void simpleLargeSmallPlots() {
     jjk[1][j]->Draw("box; same");
     ttf.DrawTextNDC(0.5, 0.95, ILDlab);
 
-    cc->Print("allSimpleLargeSmallPlots.pdf");
+    cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
 
   }
 
@@ -861,7 +925,7 @@ void simpleLargeSmallPlots() {
       TString opt=j==0?"":"same";
       ggg[i][j]->Draw(opt);
     }
-    cc->Print("allSimpleLargeSmallPlots.pdf");
+    cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
   }
 
   TH1F* hEff[2][2];
@@ -899,7 +963,7 @@ void simpleLargeSmallPlots() {
       //heff[1]->Draw();
       //heff[0]->Draw("same");
       //
-      //cc->Print("allSimpleLargeSmallPlots.pdf");
+      //cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
 
       hEff[idet][itdec] = (TH1F*) heff[0]->Clone("eff");
       hEff[idet][itdec]->Sumw2();
@@ -911,7 +975,7 @@ void simpleLargeSmallPlots() {
 
       // hEff[idet][itdec]->Draw("e");
       //      hEff[idet][itdec]->Fit("pol1");
-      //cc->Print("allSimpleLargeSmallPlots.pdf");
+      //cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
 
     }
 
@@ -947,10 +1011,10 @@ void simpleLargeSmallPlots() {
     ttf.DrawTextNDC(0.7, 0.95, ILDlab);
 
   }
-  cc->Print("figs/selectionEffsPols.eps");
-  cc->Print("figs/selectionEffsPols.C");
+  cc->Print(figdir+"selectionEffsPols.eps");
+  cc->Print(figdir+"selectionEffsPols.C");
 
-  cc->Print("allSimpleLargeSmallPlots.pdf");
+  cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
 
 
 //  TH2F* hcl[2][2];
@@ -993,8 +1057,8 @@ void simpleLargeSmallPlots() {
 //
 //
 //  }
-//  cc->Print("allSimpleLargeSmallPlots.pdf");
+//  cc->Print(figdir+"allSimpleLargeSmallPlots.pdf");
 
-  cc->Print("allSimpleLargeSmallPlots.pdf]");
+  cc->Print(figdir+"allSimpleLargeSmallPlots.pdf]");
 
 }

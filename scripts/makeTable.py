@@ -6,8 +6,8 @@ import sys
 ROOT.gErrorIgnoreLevel=ROOT.kWarning # to remove printing pdf page message
 
 
-saveFitHistos=False
-plotHistos=True
+saveFitHistos=True
+plotHistos=False
 
 
 narg=len(sys.argv)
@@ -41,14 +41,21 @@ else:
     sys.exit()
 
 
-allfiles=os.listdir('./')
 
-setuplab='tauFind_ALLEVT_'+model
+# setuplab='tauFind_'+model
+inputdir='data_ALLEVToneHad/'
+
+allfiles=os.listdir(inputdir)
+
+print allfiles
+
+setuplab='tauFind_ALLEVToneHad_'+model
+
 prelab='results_'+setuplab
 
-outputLab = model + pol
+outputLab = setuplab + pol
 
-resultsfile=open('resultsTable_'+outputLab+'.txt','w')
+resultsfile=open(inputdir+'resultsTable_'+outputLab+'.txt','w')
 
 print '**********************************************'
 print model, outputLab
@@ -68,16 +75,18 @@ for ff in allfiles:
 
 logs.sort()
 
+print logs
+
 #--------------------------
 
 if plotHistos or saveFitHistos:
-    figdir='./figs/'+model+pol+'/'
+    figdir=inputdir+model+pol+'/'
     if not os.path.isdir(figdir):
         os.makedirs(figdir)
 
 fithistos=0
 if saveFitHistos:
-    fithistos=ROOT.TFile(figdir+"fithistos.root",'recreate')
+    fithistos=ROOT.TFile(figdir+'fithistos.root','recreate')
 
 #--------------------------
 
@@ -109,7 +118,7 @@ else:
 ttf=ROOT.TText()
 ttf.SetTextFont(62)
 ttf.SetTextSize(0.06)
-labPosX=0.12
+labPosX=0.18
 labPosY=0.92
 ILDlab="ILD preliminary"
 
@@ -224,7 +233,7 @@ for logfilename in logs:
 
     polxsec = xsec*polWt
 
-    logfile=open(logfilename,'read')
+    logfile=open(inputdir + logfilename,'read')
     lines=logfile.readlines()
     insummary=False
 
@@ -375,16 +384,28 @@ for cut in cutnames:
 
 
 
+# sigGroupTable2={}
+# sigGroupTable2[0]=[0]
+# sigGroupTable2[1]=[3]
+# sigGroupTable2[2]=[1,4]
+# sigGroupTable2[3]=[2,5,6,7,8,9]
+# sigGroupNames2={}
+# sigGroupNames2[0]="HH-hm"
+# sigGroupNames2[1]="HH-mm"
+# sigGroupNames2[2]="HL-hm/mm"
+# sigGroupNames2[3]="OTHER"
+
 sigGroupTable2={}
-sigGroupTable2[0]=[0]
-sigGroupTable2[1]=[3]
-sigGroupTable2[2]=[1,4]
-sigGroupTable2[3]=[2,5,6,7,8,9]
+sigGroupTable2[0]=[0,1]
+sigGroupTable2[1]=[3,4]
+sigGroupTable2[2]=[2,5]
+sigGroupTable2[3]=[6,7,8,9]
 sigGroupNames2={}
-sigGroupNames2[0]="HH-hm"
-sigGroupNames2[1]="HH-mm"
-sigGroupNames2[2]="HL-hm/mm"
+sigGroupNames2[0]="Hx-hm"
+sigGroupNames2[1]="Hx-mm"
+sigGroupNames2[2]="LL-h/mm"
 sigGroupNames2[3]="OTHER"
+
 
 print >> resultsfile, '\n \n'
 print >> resultsfile, 'REDUCED TABLE2'
@@ -469,7 +490,7 @@ if plotHistos or saveFitHistos:
 
             print rootname
 
-            rootfile=ROOT.TFile(rootname, 'read')
+            rootfile=ROOT.TFile(inputdir+rootname, 'read')
             if rootfile.GetNkeys() == 0:
                 rootfile.Close()
             else:
@@ -524,8 +545,6 @@ if plotHistos or saveFitHistos:
     grouping['2f_Z_leptonic'][7]=2  # 2f not 2tau 
     grouping['2f_Z_leptonic'][8]=2
     grouping['2f_Z_leptonic'][9]=2
-
-
 
 #    grouping['2f_Z_leptonic_MCPol']={}
 #    grouping['2f_Z_leptonic_MCPol'][0]=0  # 2f 2tau sig
@@ -621,16 +640,16 @@ if plotHistos or saveFitHistos:
         xaxistitle["sample0_ooconeMaxPFOEn"]='max. energy PFO ouside cone [GeV]'
 
         plotstokeep.append("sample0__ALL_SELcone_ngammapfo")
-        xaxistitle["sample0__ALL_SELcone_ngammapfo"]='number of photons in cone [GeV]'
+        xaxistitle["sample0__ALL_SELcone_ngammapfo"]='number of photons in cone'
 
         plotstokeep.append("sample0__ALL_SELconeTRIM_visMass")
-        xaxistitle["sample0__ALL_SELconeTRIM_visMass"]='visible mass of cone [GeV/c~{2}]'
+        xaxistitle["sample0__ALL_SELconeTRIM_visMass"]='visible mass of cone [GeV/c^{2}]'
 
         plotstokeep.append("sample0__ALL_SELconeTRIM_neutralvisMass")
-        xaxistitle["sample0__ALL_SELconeTRIM_neutralvisMass"]='visible neutral mass of cone [GeV/c~{2}]'
+        xaxistitle["sample0__ALL_SELconeTRIM_neutralvisMass"]='visible neutral mass of cone [GeV/c^{2}]'
 
         plotstokeep.append("sample0_SEL_coneMass")
-        xaxistitle["sample0_SEL_coneMass"]='visible mass of cone [GeV/c~{2}]'
+        xaxistitle["sample0_SEL_coneMass"]='visible mass of cone [GeV/c^{2}]'
 
         plotstokeep.append("sample0_SEL_rec_pi_pol")
         xaxistitle["sample0_SEL_rec_pi_pol"]='polarimeter reco #tau -> #pi decays'
@@ -816,5 +835,6 @@ if plotHistos or saveFitHistos:
             rootfiles[cl][rk].Close()
 
 if saveFitHistos:
+    fithistos.Write(0)
     fithistos.Close()
                         
