@@ -120,7 +120,8 @@ void danielKeitaTauFinderProcessor::init() {
   h_rhoDecaySinglePhoClus_reason->GetXaxis()->SetBinLabel( 4, "merged(phoClus)" );
   h_rhoDecaySinglePhoClus_reason->GetXaxis()->SetBinLabel( 5, "merged(nhadClus)" );
   h_rhoDecaySinglePhoClus_reason->GetXaxis()->SetBinLabel( 6, "merged(chgClus)" );
-  h_rhoDecaySinglePhoClus_reason->GetXaxis()->SetBinLabel( 7, "attachedToChg" );
+  h_rhoDecaySinglePhoClus_reason->GetXaxis()->SetBinLabel( 7, "attachedToChgHad" );
+  h_rhoDecaySinglePhoClus_reason->GetXaxis()->SetBinLabel( 8, "misidAsNeuHad" );
   h_rhoDecaySinglePhoClus_reason->GetXaxis()->SetBinLabel( 10, "other" );
 
   h_rhoDecaySinglePhoClus_mergedGammaClusterEval1 = new TH2F( "rhoDecaySinglePhoClus_mergedGammaClusterEval1", "rhoDecaySinglePhoClus_mergedGammaClusterEval1", 100,0,200,100,0,25);
@@ -146,9 +147,9 @@ void danielKeitaTauFinderProcessor::init() {
     h_nIsoMuons[iss] = new TH1F(  samp+ "nIsoMuons",  samp+ "nIsoMuons", 10, -0.5, 9.5 );
     h_nIsoElectrons[iss] = new TH1F(  samp+ "nIsoElectrons",  samp+ "nIsoElectrons", 10, -0.5, 9.5 );
 
-    h_pi_mcPolarExact[iss] = new TH1F( samp+ "pi_mcPolarExact",  samp+ "pi_mcPolarExact", 110, -1.1, 1.1 );
-    h_rho_mcPolarExact[iss] = new TH1F( samp+ "rho_mcPolarExact",  samp+ "rho_mcPolarExact", 110, -1.1, 1.1);
-    h_rho_mcPolarExactApprox[iss] = new TH2F( samp+ "rho_mcPolarExactApprox",  samp+ "rho_mcPolarExactApprox",110, -1.1, 1.1, 110, -1.1, 1.1);
+    h_pi_mcPolarExact[iss] = new TH1F( samp+ "pi_mcPolarExact",  samp+ "pi_mcPolarExact", 150, -1.5, 1.5 );
+    h_rho_mcPolarExact[iss] = new TH1F( samp+ "rho_mcPolarExact",  samp+ "rho_mcPolarExact", 150, -1.5, 1.5);
+    h_rho_mcPolarExactApprox[iss] = new TH2F( samp+ "rho_mcPolarExactApprox",  samp+ "rho_mcPolarExactApprox",150, -1.5, 1.5, 150, -1.5, 1.5);
 
 //    h_rho_mcapprox_cospsi_helPos[iss]   = new TH1F( samp+ "rho_mcapprox_cospsi_helPos",  samp+ "rho_mcapprox_cospsi_helPos", 100, -1.5, 1.5 );
 //    h_rho_mcapprox_costheta_helPos[iss] = new TH1F( samp+ "rho_mcapprox_costheta_helPos",  samp+ "rho_mcapprox_costheta_helPos", 100, -1.5, 1.5 );
@@ -158,84 +159,84 @@ void danielKeitaTauFinderProcessor::init() {
 //    h_rho_mcapprox_costheta_helNeg[iss] = new TH1F( samp+ "rho_mcapprox_costheta_helNeg",  samp+ "rho_mcapprox_costheta_helNeg", 100, -1.5, 1.5 );
 //    h_rho_mcapprox_cosbeta_helNeg[iss]  = new TH1F( samp+ "rho_mcapprox_cosbeta_helNeg",  samp+ "rho_mcapprox_cosbeta_helNeg", 100, -1.5, 1.5 );
 
-    h_pi_mcPolarExact_helNeg[iss]  = new TH1F( samp+  "pi_mcPolarExact_helNeg",  samp+  "pi_mcPolarExact_helNeg", 110, -1.1, 1.1 );
-    h_pi_mcPolarExact_helPos[iss]  = new TH1F( samp+  "pi_mcPolarExact_helPos",  samp+  "pi_mcPolarExact_helPos", 110, -1.1, 1.1 );
-    h_rho_mcPolarExact_helNeg[iss] = new TH1F( samp+ "rho_mcPolarExact_helNeg",  samp+ "rho_mcPolarExact_helNeg", 110, -1.1, 1.1);
-    h_rho_mcPolarExact_helPos[iss] = new TH1F( samp+ "rho_mcPolarExact_helPos",  samp+ "rho_mcPolarExact_helPos", 110, -1.1, 1.1);
+    h_pi_mcPolarExact_helNeg[iss]  = new TH1F( samp+  "pi_mcPolarExact_helNeg",  samp+  "pi_mcPolarExact_helNeg", 150, -1.5, 1.5 );
+    h_pi_mcPolarExact_helPos[iss]  = new TH1F( samp+  "pi_mcPolarExact_helPos",  samp+  "pi_mcPolarExact_helPos", 150, -1.5, 1.5 );
+    h_rho_mcPolarExact_helNeg[iss] = new TH1F( samp+ "rho_mcPolarExact_helNeg",  samp+ "rho_mcPolarExact_helNeg", 150, -1.5, 1.5);
+    h_rho_mcPolarExact_helPos[iss] = new TH1F( samp+ "rho_mcPolarExact_helPos",  samp+ "rho_mcPolarExact_helPos", 150, -1.5, 1.5);
 
 
-    hSEL_pi_mcPolarExact_helNeg[iss]  = new TH1F( samp+ "SEL_pi_mcPolarExact_helNeg",  samp+  "SEL_pi_mcPolarExact_helNeg", 110, -1.1, 1.1 );
-    hSEL_pi_mcPolarExact_helPos[iss]  = new TH1F( samp+ "SEL_pi_mcPolarExact_helPos",  samp+  "SEL_pi_mcPolarExact_helPos", 110, -1.1, 1.1 );
-    hSEL_rho_mcPolarExact_helNeg[iss] = new TH1F( samp+ "SEL_rho_mcPolarExact_helNeg",  samp+ "SEL_rho_mcPolarExact_helNeg", 110, -1.1, 1.1);
-    hSEL_rho_mcPolarExact_helPos[iss] = new TH1F( samp+ "SEL_rho_mcPolarExact_helPos",  samp+ "SEL_rho_mcPolarExact_helPos", 110, -1.1, 1.1);
-
-
-
-    h_pi_mcPolarApproxCheatEn[iss] = new TH1F( samp+ "pi_mcPolarApproxCheatEn",  samp+ "pi_mcPolarApproxCheatEn", 110, -1.1, 1.1 );
-    h_rho_mcPolarApproxCheatEn[iss] = new TH1F( samp+ "rho_mcPolarApproxCheatEn",  samp+ "rho_mcPolarApproxCheatEn", 110, -1.1, 1.1);
-
-    h_pi_mcPolarApproxCheatEn_helNeg[iss]  = new TH1F( samp+  "pi_mcPolarApproxCheatEn_helNeg",  samp+  "pi_mcPolarApproxCheatEn_helNeg", 110, -1.1, 1.1 );
-    h_pi_mcPolarApproxCheatEn_helPos[iss]  = new TH1F( samp+  "pi_mcPolarApproxCheatEn_helPos",  samp+  "pi_mcPolarApproxCheatEn_helPos", 110, -1.1, 1.1 );
-    h_rho_mcPolarApproxCheatEn_helNeg[iss] = new TH1F( samp+ "rho_mcPolarApproxCheatEn_helNeg",  samp+ "rho_mcPolarApproxCheatEn_helNeg", 110, -1.1, 1.1);
-    h_rho_mcPolarApproxCheatEn_helPos[iss] = new TH1F( samp+ "rho_mcPolarApproxCheatEn_helPos",  samp+ "rho_mcPolarApproxCheatEn_helPos", 110, -1.1, 1.1);
-
-
-    h_pi_mcPolarApprox[iss] = new TH1F( samp+ "pi_mcPolarApprox",  samp+ "pi_mcPolarApprox", 110, -1.1, 1.1 );
-    h_rho_mcPolarApprox[iss] = new TH1F( samp+ "rho_mcPolarApprox",  samp+ "rho_mcPolarApprox", 110, -1.1, 1.1);
-
-    hselA_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selA_pi_mcPolarApprox",   samp+ "selA_pi_mcPolarApprox", 110, -1.1, 1.1 );
-    hselA_rho_mcPolarApprox[iss] = new TH1F( samp+ "selA_rho_mcPolarApprox",  samp+ "selA_rho_mcPolarApprox", 110, -1.1, 1.1);
-
-    hselB_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selB_pi_mcPolarApprox",   samp+ "selB_pi_mcPolarApprox", 110, -1.1, 1.1 );
-    hselB_rho_mcPolarApprox[iss] = new TH1F( samp+ "selB_rho_mcPolarApprox",  samp+ "selB_rho_mcPolarApprox", 110, -1.1, 1.1);
-
-    hselC_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selC_pi_mcPolarApprox",   samp+ "selC_pi_mcPolarApprox", 110, -1.1, 1.1 );
-    hselC_rho_mcPolarApprox[iss] = new TH1F( samp+ "selC_rho_mcPolarApprox",  samp+ "selC_rho_mcPolarApprox", 110, -1.1, 1.1);
-
-    hselD_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selD_pi_mcPolarApprox",   samp+ "selD_pi_mcPolarApprox", 110, -1.1, 1.1 );
-    hselD_rho_mcPolarApprox[iss] = new TH1F( samp+ "selD_rho_mcPolarApprox",  samp+ "selD_rho_mcPolarApprox", 110, -1.1, 1.1);
-
-    hselE_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selE_pi_mcPolarApprox",   samp+ "selE_pi_mcPolarApprox", 110, -1.1, 1.1 );
-    hselE_rho_mcPolarApprox[iss] = new TH1F( samp+ "selE_rho_mcPolarApprox",  samp+ "selE_rho_mcPolarApprox", 110, -1.1, 1.1);
-
-    hselF_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selF_pi_mcPolarApprox",   samp+ "selF_pi_mcPolarApprox", 110, -1.1, 1.1 );
-    hselF_rho_mcPolarApprox[iss] = new TH1F( samp+ "selF_rho_mcPolarApprox",  samp+ "selF_rho_mcPolarApprox", 110, -1.1, 1.1);
-
-    hselG_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selG_pi_mcPolarApprox",   samp+ "selG_pi_mcPolarApprox", 110, -1.1, 1.1 );
-    hselG_rho_mcPolarApprox[iss] = new TH1F( samp+ "selG_rho_mcPolarApprox",  samp+ "selG_rho_mcPolarApprox", 110, -1.1, 1.1);
-
-    hselH_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selH_pi_mcPolarApprox",   samp+ "selH_pi_mcPolarApprox", 110, -1.1, 1.1 );
-    hselH_rho_mcPolarApprox[iss] = new TH1F( samp+ "selH_rho_mcPolarApprox",  samp+ "selH_rho_mcPolarApprox", 110, -1.1, 1.1);
-
-    h_pi_mcPolarApprox_helNeg[iss]  = new TH1F( samp+  "pi_mcPolarApprox_helNeg",  samp+  "pi_mcPolarApprox_helNeg", 110, -1.1, 1.1 );
-    h_pi_mcPolarApprox_helPos[iss]  = new TH1F( samp+  "pi_mcPolarApprox_helPos",  samp+  "pi_mcPolarApprox_helPos", 110, -1.1, 1.1 );
-    h_rho_mcPolarApprox_helNeg[iss] = new TH1F( samp+ "rho_mcPolarApprox_helNeg",  samp+ "rho_mcPolarApprox_helNeg", 110, -1.1, 1.1);
-    h_rho_mcPolarApprox_helPos[iss] = new TH1F( samp+ "rho_mcPolarApprox_helPos",  samp+ "rho_mcPolarApprox_helPos", 110, -1.1, 1.1);
-
-
-    hSEL_pi_mcPolarApprox_helNeg[iss]  = new TH1F( samp+ "SEL_pi_mcPolarApprox_helNeg",  samp+ "SEL_pi_mcPolarApprox_helNeg", 110, -1.1, 1.1 );
-    hSEL_pi_mcPolarApprox_helPos[iss]  = new TH1F( samp+ "SEL_pi_mcPolarApprox_helPos",  samp+ "SEL_pi_mcPolarApprox_helPos", 110, -1.1, 1.1 );
-    hSEL_rho_mcPolarApprox_helNeg[iss] = new TH1F( samp+ "SEL_rho_mcPolarApprox_helNeg", samp+ "SEL_rho_mcPolarApprox_helNeg", 110, -1.1, 1.1);
-    hSEL_rho_mcPolarApprox_helPos[iss] = new TH1F( samp+ "SEL_rho_mcPolarApprox_helPos", samp+ "SEL_rho_mcPolarApprox_helPos", 110, -1.1, 1.1);
+    hSEL_pi_mcPolarExact_helNeg[iss]  = new TH1F( samp+ "SEL_pi_mcPolarExact_helNeg",  samp+  "SEL_pi_mcPolarExact_helNeg", 150, -1.5, 1.5 );
+    hSEL_pi_mcPolarExact_helPos[iss]  = new TH1F( samp+ "SEL_pi_mcPolarExact_helPos",  samp+  "SEL_pi_mcPolarExact_helPos", 150, -1.5, 1.5 );
+    hSEL_rho_mcPolarExact_helNeg[iss] = new TH1F( samp+ "SEL_rho_mcPolarExact_helNeg",  samp+ "SEL_rho_mcPolarExact_helNeg", 150, -1.5, 1.5);
+    hSEL_rho_mcPolarExact_helPos[iss] = new TH1F( samp+ "SEL_rho_mcPolarExact_helPos",  samp+ "SEL_rho_mcPolarExact_helPos", 150, -1.5, 1.5);
 
 
 
+    h_pi_mcPolarApproxCheatEn[iss] = new TH1F( samp+ "pi_mcPolarApproxCheatEn",  samp+ "pi_mcPolarApproxCheatEn", 150, -1.5, 1.5 );
+    h_rho_mcPolarApproxCheatEn[iss] = new TH1F( samp+ "rho_mcPolarApproxCheatEn",  samp+ "rho_mcPolarApproxCheatEn", 150, -1.5, 1.5);
 
-    h_pirho_tauMinusCosth_mcPolarExact[iss] = new TH2F( samp+ "pirho_tauMinusCosth_mcPolarExact", samp+ "pirho_tauMinusCosth_mcPolarExact", 22, -1.1, 1.1, 22, -1.10, 1.10 );
+    h_pi_mcPolarApproxCheatEn_helNeg[iss]  = new TH1F( samp+  "pi_mcPolarApproxCheatEn_helNeg",  samp+  "pi_mcPolarApproxCheatEn_helNeg", 150, -1.5, 1.5 );
+    h_pi_mcPolarApproxCheatEn_helPos[iss]  = new TH1F( samp+  "pi_mcPolarApproxCheatEn_helPos",  samp+  "pi_mcPolarApproxCheatEn_helPos", 150, -1.5, 1.5 );
+    h_rho_mcPolarApproxCheatEn_helNeg[iss] = new TH1F( samp+ "rho_mcPolarApproxCheatEn_helNeg",  samp+ "rho_mcPolarApproxCheatEn_helNeg", 150, -1.5, 1.5);
+    h_rho_mcPolarApproxCheatEn_helPos[iss] = new TH1F( samp+ "rho_mcPolarApproxCheatEn_helPos",  samp+ "rho_mcPolarApproxCheatEn_helPos", 150, -1.5, 1.5);
 
-    h_pirho_mcPolarExactPlusMinus[iss] = new TH2F( samp+ "pirho_mcPolarExactPlusMinus", samp+ "pirho_mcPolarExactPlusMinus", 22, -1.1, 1.1, 22, -1.10, 1.10 );
-    h_pirho_mcPolarApproxPlusMinus[iss] = new TH2F( samp+ "pirho_mcPolarApproxPlusMinus", samp+ "pirho_mcPolarApproxPlusMinus", 22, -1.1, 1.1, 22, -1.10, 1.10 );
 
-    h_pi_mcPolarComp[iss] = new TH2F( samp+ "pi_mcPolarComp",  samp+ "pi_mcPolarComp", 110, -1.10, 1.10 , 110, -1.10, 1.10 );
-    h_rho_mcPolarComp[iss] = new TH2F( samp+ "rho_mcPolarComp",  samp+ "rho_mcPolarComp", 110, -1.10, 1.10 , 110, -1.10, 1.10);
+    h_pi_mcPolarApprox[iss] = new TH1F( samp+ "pi_mcPolarApprox",  samp+ "pi_mcPolarApprox", 150, -1.5, 1.5 );
+    h_rho_mcPolarApprox[iss] = new TH1F( samp+ "rho_mcPolarApprox",  samp+ "rho_mcPolarApprox", 150, -1.5, 1.5);
 
-    h_pi_mcPolar[iss] = new TH1F( samp+ "pi_mcPolar",  samp+ "pi_mcPolar", 110, 0., 1.10 );
+    hselA_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selA_pi_mcPolarApprox",   samp+ "selA_pi_mcPolarApprox", 150, -1.5, 1.5 );
+    hselA_rho_mcPolarApprox[iss] = new TH1F( samp+ "selA_rho_mcPolarApprox",  samp+ "selA_rho_mcPolarApprox", 150, -1.5, 1.5);
 
-    h_rho_mcPolar[iss] = new TH2F( samp+ "rho_mcPolar",  samp+ "rho_mcPolar", 110, 0., 1.1,  110, 0, 1.1);
-    h_rho_mcPolar2[iss] = new TH2F( samp+ "rho_mcPolar2",  samp+ "rho_mcPolar2", 110, 0., 1.1, 110, 0., 1.1 );
+    hselB_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selB_pi_mcPolarApprox",   samp+ "selB_pi_mcPolarApprox", 150, -1.5, 1.5 );
+    hselB_rho_mcPolarApprox[iss] = new TH1F( samp+ "selB_rho_mcPolarApprox",  samp+ "selB_rho_mcPolarApprox", 150, -1.5, 1.5);
 
-    h_mc_tauMinus_costh[iss] = new TH1F( samp+ "mc_tauMinus_costh",  samp+ "mc_tauMinus_costh", 110, -1.1, 1.1 );
-    hSEL_mc_tauMinus_costh[iss] = new TH1F( samp+ "SELmc_tauMinus_costh",  samp+ "SELmc_tauMinus_costh", 110, -1.1, 1.1 );
+    hselC_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selC_pi_mcPolarApprox",   samp+ "selC_pi_mcPolarApprox", 150, -1.5, 1.5 );
+    hselC_rho_mcPolarApprox[iss] = new TH1F( samp+ "selC_rho_mcPolarApprox",  samp+ "selC_rho_mcPolarApprox", 150, -1.5, 1.5);
+
+    hselD_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selD_pi_mcPolarApprox",   samp+ "selD_pi_mcPolarApprox", 150, -1.5, 1.5 );
+    hselD_rho_mcPolarApprox[iss] = new TH1F( samp+ "selD_rho_mcPolarApprox",  samp+ "selD_rho_mcPolarApprox", 150, -1.5, 1.5);
+
+    hselE_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selE_pi_mcPolarApprox",   samp+ "selE_pi_mcPolarApprox", 150, -1.5, 1.5 );
+    hselE_rho_mcPolarApprox[iss] = new TH1F( samp+ "selE_rho_mcPolarApprox",  samp+ "selE_rho_mcPolarApprox", 150, -1.5, 1.5);
+
+    hselF_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selF_pi_mcPolarApprox",   samp+ "selF_pi_mcPolarApprox", 150, -1.5, 1.5 );
+    hselF_rho_mcPolarApprox[iss] = new TH1F( samp+ "selF_rho_mcPolarApprox",  samp+ "selF_rho_mcPolarApprox", 150, -1.5, 1.5);
+
+    hselG_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selG_pi_mcPolarApprox",   samp+ "selG_pi_mcPolarApprox", 150, -1.5, 1.5 );
+    hselG_rho_mcPolarApprox[iss] = new TH1F( samp+ "selG_rho_mcPolarApprox",  samp+ "selG_rho_mcPolarApprox", 150, -1.5, 1.5);
+
+    hselH_pi_mcPolarApprox[iss]  = new TH1F( samp+ "selH_pi_mcPolarApprox",   samp+ "selH_pi_mcPolarApprox", 150, -1.5, 1.5 );
+    hselH_rho_mcPolarApprox[iss] = new TH1F( samp+ "selH_rho_mcPolarApprox",  samp+ "selH_rho_mcPolarApprox", 150, -1.5, 1.5);
+
+    h_pi_mcPolarApprox_helNeg[iss]  = new TH1F( samp+  "pi_mcPolarApprox_helNeg",  samp+  "pi_mcPolarApprox_helNeg", 150, -1.5, 1.5 );
+    h_pi_mcPolarApprox_helPos[iss]  = new TH1F( samp+  "pi_mcPolarApprox_helPos",  samp+  "pi_mcPolarApprox_helPos", 150, -1.5, 1.5 );
+    h_rho_mcPolarApprox_helNeg[iss] = new TH1F( samp+ "rho_mcPolarApprox_helNeg",  samp+ "rho_mcPolarApprox_helNeg", 150, -1.5, 1.5);
+    h_rho_mcPolarApprox_helPos[iss] = new TH1F( samp+ "rho_mcPolarApprox_helPos",  samp+ "rho_mcPolarApprox_helPos", 150, -1.5, 1.5);
+
+
+    hSEL_pi_mcPolarApprox_helNeg[iss]  = new TH1F( samp+ "SEL_pi_mcPolarApprox_helNeg",  samp+ "SEL_pi_mcPolarApprox_helNeg", 150, -1.5, 1.5 );
+    hSEL_pi_mcPolarApprox_helPos[iss]  = new TH1F( samp+ "SEL_pi_mcPolarApprox_helPos",  samp+ "SEL_pi_mcPolarApprox_helPos", 150, -1.5, 1.5 );
+    hSEL_rho_mcPolarApprox_helNeg[iss] = new TH1F( samp+ "SEL_rho_mcPolarApprox_helNeg", samp+ "SEL_rho_mcPolarApprox_helNeg", 150, -1.5, 1.5);
+    hSEL_rho_mcPolarApprox_helPos[iss] = new TH1F( samp+ "SEL_rho_mcPolarApprox_helPos", samp+ "SEL_rho_mcPolarApprox_helPos", 150, -1.5, 1.5);
+
+
+
+
+    h_pirho_tauMinusCosth_mcPolarExact[iss] = new TH2F( samp+ "pirho_tauMinusCosth_mcPolarExact", samp+ "pirho_tauMinusCosth_mcPolarExact", 22, -1.1, 1.1, 30, -1.5, 1.5 );
+
+    h_pirho_mcPolarExactPlusMinus[iss] = new TH2F( samp+ "pirho_mcPolarExactPlusMinus", samp+ "pirho_mcPolarExactPlusMinus", 30, -1.5, 1.5, 30, -1.5, 1.5 );
+    h_pirho_mcPolarApproxPlusMinus[iss] = new TH2F( samp+ "pirho_mcPolarApproxPlusMinus", samp+ "pirho_mcPolarApproxPlusMinus", 30, -1.5, 1.5, 30, -1.5, 1.5 );
+
+    h_pi_mcPolarComp[iss] = new TH2F( samp+ "pi_mcPolarComp",  samp+ "pi_mcPolarComp", 150, -1.5, 1.5 , 150, -1.5, 1.5 );
+    h_rho_mcPolarComp[iss] = new TH2F( samp+ "rho_mcPolarComp",  samp+ "rho_mcPolarComp", 150, -1.5, 1.5 , 150, -1.5, 1.5);
+
+    h_pi_mcPolar[iss] = new TH1F( samp+ "pi_mcPolar",  samp+ "pi_mcPolar", 150, 0., 1.50 );
+
+    h_rho_mcPolar[iss] = new TH2F( samp+ "rho_mcPolar",  samp+ "rho_mcPolar", 150, 0., 1.5,  150, 0, 1.5);
+    h_rho_mcPolar2[iss] = new TH2F( samp+ "rho_mcPolar2",  samp+ "rho_mcPolar2", 150, 0., 1.5, 150, 0., 1.5 );
+
+    h_mc_tauMinus_costh[iss] = new TH1F( samp+ "mc_tauMinus_costh",  samp+ "mc_tauMinus_costh", 150, -1.5, 1.5 );
+    hSEL_mc_tauMinus_costh[iss] = new TH1F( samp+ "SELmc_tauMinus_costh",  samp+ "SELmc_tauMinus_costh", 150, -1.5, 1.5 );
 
     h_mc_tauSpin[iss] = new TH2F( samp+ "mc_tauSpin", samp+ "mc_tauSpin", 3, -1.5, 1.5, 3,  -1.5, 1.5 );
 
@@ -2265,22 +2266,16 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 	    if ( decay == tauUtils::decayRho ) {
 
 	      if (ngam==2) { // expected # of photon-like PFOs
-
 		for ( auto cp : coneparticlesTRIM[j] ) {
 		  if ( cp->getType()==22 && cp->getClusters().size()==1 ) {
-
 		    std::vector <float> evals = tauUtils::getClusterEigenvalues( cp->getClusters()[0] ,  pandoraClusCol->getParameters() );
-
 		    h_rhoDecaySinglePhoClus_singleGammaClusterEval1->Fill(cp->getClusters()[0]->getEnergy(), sqrt(evals[0]));
 		    h_rhoDecaySinglePhoClus_singleGammaClusterEval2->Fill(cp->getClusters()[0]->getEnergy(), sqrt(evals[1]));
 		    h_rhoDecaySinglePhoClus_singleGammaClusterEvalRatio->Fill(cp->getClusters()[0]->getEnergy(), sqrt(evals[0]/evals[1]));
 		  }
 		}
-		
-	      } else if ( ngam==1 ) {
-		
+	      } else if ( ngam==1 ) { // only a single reconstructed photon PFO: why?
 		ReconstructedParticle* rpgam(0);
-		  
 		for ( auto cp : coneparticlesTRIM[j] ) {
 		  if ( cp->getType()==22 ) {
 		    rpgam = cp;
@@ -2294,94 +2289,44 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 		  Cluster* cl = rpgam->getClusters()[0];
 		  evals = tauUtils::getClusterEigenvalues(cl,  pandoraClusCol->getParameters() );
 		  std::vector <float> evalsDJ=tauUtils::getClusterEigenvalues_DJ(cl);
-
-		  //cout << "single gam cluster: " << cl->getEnergy() << " " << cl->getShape() [0] << " " << cl->getShape() [1] << " " << cl->getShape() [2] << " " << cl->getShape() [3] << endl;
-		  //cout << "single gam cluster: eigenvalues   " << evals[0] << " " << evals[1] << " " << evals[2] << endl;
-		  //cout << "single gam cluster: eigenvaluesDJ " << evalsDJ[0] << " " << evalsDJ[1] << " " << evalsDJ[2] << endl;
-
 		}
-
 
 		std::vector <MCParticle*> asd = tauUtils::getstablemctauDaughters( matchedTauByDir[j] );
 		std::vector <MCParticle*> mcgamma;
 		for ( auto t : asd ) {
 		  if ( t->getPDG()==22 ) mcgamma.push_back(t);
 		}
-		//		cout << "single phoClus rho decay: nmc photons = " << mcgamma.size() << endl;
 
 		std::map<MCParticle*, ReconstructedParticle*> majorPFO;
 
 		for ( auto mcj : mcgamma ) {
-		  //		  cout << "mc photon energy:" << mcj->getEnergy() << " decayed in tracker? " << mcj->isDecayedInTracker() << endl;
-
-		  // //		  cout << "mc->reco related PFOs: ";
-		  // for (size_t kk=0; kk<_relNavi->getRelatedFromObjects( mcj ).size(); kk++) {
-		  //   ReconstructedParticle* pfo = dynamic_cast <ReconstructedParticle*> (_relNavi->getRelatedFromObjects( mcj )[kk]);
-		  //   float wgt = _relNavi->getRelatedFromWeights( mcj )[kk];
-		  //   float clusterwgt = (int(wgt)/10000)/1000. ;
-		  //   //		    cout << "en " << pfo->getEnergy() << " type " << pfo->getType() << " clwgt " << clusterwgt << " ; ";
-		  // }
-		  // //		  cout << endl;
-		
 		  float biggestclwt(0);
-		  
-		  //		  cout << "reco->mc related PFOs: ";
 		  for (size_t kk=0; kk<_relNavi2->getRelatedToObjects( mcj ).size(); kk++) {
 		    ReconstructedParticle* pfo = dynamic_cast <ReconstructedParticle*> (_relNavi2->getRelatedToObjects( mcj )[kk]);
 		    float wgt = _relNavi2->getRelatedToWeights( mcj )[kk];
 		    float clusterwgt = (int(wgt)/10000)/1000. ;
-		    //		    cout << "en " << pfo->getEnergy() << " type " << pfo->getType() << " clwgt " << clusterwgt << " ; ";
-		  
 		    if ( clusterwgt>biggestclwt ) {
 		      biggestclwt=clusterwgt;
 		      majorPFO[mcj]=pfo;
 		    }
-
 		  }
-		  //		  cout << endl;
-		
-		  //		cout << "mc->reco related MCparticles: ";
-		  //		for (size_t kk=0; kk<_relNavi2->getRelatedFromObjects( pfo ).size(); kk++) {
-		  //			MCParticle* mcp = dynamic_cast <MCParticle*> (_relNavi2->getRelatedFromObjects( pfo )[kk]);
-		  //			float wgt = _relNavi2->getRelatedFromWeights( pfo )[kk];
-		  //			float clusterwgt = (int(wgt)/10000)/1000. ;
-		  //			cout << mcp->getPDG() << " " << mcp->getEnergy() << " " << clusterwgt << " , ";
-		  //		}
-		  //		cout << endl;
-		  
-
 		}
 
-		////		cout << mcgamma.size() << " " << majorPFO.size() << endl;
-		//for ( auto mcpf : majorPFO ) {
-		//  cout << " mcgammen " << mcpf.first->getEnergy() << " pfoen " << mcpf.second->getEnergy() << " ; ";
-		//}
-		//cout << endl;
-
 		if (  mcgamma.size()==2 ) {
-
 		  float angle = TVector3( mcgamma[0]->getMomentum() ).Angle( TVector3( mcgamma[1]->getMomentum() ) );
-		  //		  cout << "angle " << angle;
-
-
 		  bool oneIsDecayed = mcgamma[0]->isDecayedInTracker() || mcgamma[1]->isDecayedInTracker();
-
 		  if ( oneIsDecayed ) {
 		    h_rhoDecaySinglePhoClus_reason->Fill( 0 );
-		  } else {
+		  } else { // not 2 mc photons
 		    if ( majorPFO.find( mcgamma[0] ) == majorPFO.end() || majorPFO.find( mcgamma[1] ) == majorPFO.end() ) {
-		      
 		      if (  mcgamma[0]->getEnergy()<0.3 || mcgamma[1]->getEnergy()<0.3 ) {
 			h_rhoDecaySinglePhoClus_reason->Fill( 1 );
 		      } else {
 			h_rhoDecaySinglePhoClus_reason->Fill( 2 );
 		      }
-		      
 		    } else {
-		      
 		      bool merged = majorPFO[mcgamma[0]]==majorPFO[mcgamma[1]];
 		      // cout << " merged into pho clus ? " << merged << endl;
-
 		      if ( merged ) {
 			if ( majorPFO[mcgamma[0]]->getType()==22 ) {
 			  h_rhoDecaySinglePhoClus_reason->Fill( 3 );
@@ -2412,10 +2357,16 @@ void danielKeitaTauFinderProcessor::processEvent( LCEvent * evt ) {
 			  h_rhoDecaySinglePhoClus_reason->Fill( 5 );
 			}
 		      } else {
-			if ( majorPFO[mcgamma[0]]->getType()==211 || majorPFO[mcgamma[1]]->getType()==211 ) {
+			if ( abs(majorPFO[mcgamma[0]]->getType())==211 || abs(majorPFO[mcgamma[1]]->getType())==211 ) {
 			  h_rhoDecaySinglePhoClus_reason->Fill( 6 );
+			} else if ( abs(majorPFO[mcgamma[0]]->getType())==2112 || abs(majorPFO[mcgamma[1]]->getType())==2112 ) {
+			  h_rhoDecaySinglePhoClus_reason->Fill( 7 );
 			} else {
-			  //			  cout << "hihihi" << endl;
+			  //cout << "hihihi #mcgamma: " << mcgamma.size() << endl;
+			  //cout << mcgamma[0] << " " << mcgamma[1] << endl;
+			  //cout << mcgamma[0]->getEnergy() << " " << mcgamma[1]->getEnergy() << endl;
+			  //cout << majorPFO[mcgamma[0]]->getType() << " " <<  majorPFO[mcgamma[1]]->getType() << endl;
+			  //cout << majorPFO[mcgamma[0]]->getEnergy() << " " <<  majorPFO[mcgamma[1]]->getEnergy() << endl;
 			  h_rhoDecaySinglePhoClus_reason->Fill( 9 );
 			}
 		      }
